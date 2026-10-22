@@ -118,7 +118,20 @@
                 @endif
             </a>
 
-            <!-- 5. Laporan -->
+            <!-- 5. Manajemen User -->
+            <a href="{{ route('users.index') }}" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all {{ request()->routeIs('users.*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium' }}">
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 {{ request()->routeIs('users.*') ? 'text-white' : 'text-slate-400' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="text-xs truncate">Manajemen User</div>
+                    <div class="text-[10px] truncate {{ request()->routeIs('users.*') ? 'text-blue-100' : 'text-slate-400' }}">Klien &amp; Teknisi</div>
+                </div>
+            </a>
+
+            <!-- 6. Laporan -->
             <a href="{{ route('laporan.index') }}" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all {{ request()->routeIs('laporan.*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium' }}">
                 <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 {{ request()->routeIs('laporan.*') ? 'text-white' : 'text-slate-400' }}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
@@ -132,18 +145,34 @@
             </a>
         @elseif($role === 'teknisi')
             <!-- Teknisi View -->
-            <a href="{{ route('teknisi.portal') }}" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all {{ request()->routeIs('teknisi.*') ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20 font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium' }}">
-                <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 {{ request()->routeIs('teknisi.*') ? 'text-white' : 'text-slate-400' }}">
+            <!-- 1. Tugas SPK Saya -->
+            <a href="{{ route('teknisi.portal') }}" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all {{ request()->routeIs('teknisi.portal') ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20 font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium' }}">
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 {{ request()->routeIs('teknisi.portal') ? 'text-white' : 'text-slate-400' }}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                     </svg>
                 </div>
                 <div class="flex-1 min-w-0">
                     <div class="text-xs truncate">Tugas SPK Saya</div>
-                    <div class="text-[10px] truncate text-emerald-100">Work Order Lapangan</div>
+                    <div class="text-[10px] truncate {{ request()->routeIs('teknisi.portal') ? 'text-emerald-100' : 'text-slate-400' }}">Work Order Lapangan</div>
                 </div>
             </a>
 
+            <!-- 2. Riwayat Tiket Selesai (Kroscek Pekerjaan) -->
+            <a href="{{ route('teknisi.riwayat') }}" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all {{ request()->routeIs('teknisi.riwayat') ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20 font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium' }}">
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 {{ request()->routeIs('teknisi.riwayat') ? 'text-white' : 'text-slate-400' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"/>
+                    </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="text-xs truncate">Riwayat Tiket Selesai</div>
+                    <div class="text-[10px] truncate {{ request()->routeIs('teknisi.riwayat') ? 'text-emerald-100' : 'text-slate-400' }}">Kroscek &amp; Catatan OPM</div>
+                </div>
+            </a>
+
+            <!-- 3. Data Topologi -->
             <a href="{{ route('topologi.index') }}" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all {{ request()->routeIs('topologi.*') ? 'bg-blue-600 text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium' }}">
                 <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-slate-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
@@ -159,6 +188,7 @@
                 </div>
             </a>
 
+            <!-- 4. Cek Logistik -->
             <a href="{{ route('logistik.index') }}" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all {{ request()->routeIs('logistik.*') ? 'bg-blue-600 text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium' }}">
                 <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-slate-400">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
@@ -167,20 +197,35 @@
                 </div>
                 <div class="flex-1 min-w-0">
                     <div class="text-xs truncate">Cek Logistik</div>
-                    <div class="text-[10px] truncate text-slate-400">Stok Sparepart Tersedia</div>
+                    <div class="text-[10px] truncate text-slate-400">Material Serah Terima</div>
                 </div>
             </a>
         @else
             <!-- Klien View -->
-            <a href="{{ route('klien.portal') }}" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all {{ request()->routeIs('klien.*') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium' }}">
-                <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 {{ request()->routeIs('klien.*') ? 'text-white' : 'text-slate-400' }}">
+            <!-- 1. Portal Pelanggan -->
+            <a href="{{ route('klien.portal') }}" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all {{ request()->routeIs('klien.portal') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium' }}">
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 {{ request()->routeIs('klien.portal') ? 'text-white' : 'text-slate-400' }}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
                 </div>
                 <div class="flex-1 min-w-0">
                     <div class="text-xs truncate">Portal Pelanggan</div>
-                    <div class="text-[10px] truncate text-blue-100">Status Layanan &amp; Tiket</div>
+                    <div class="text-[10px] truncate {{ request()->routeIs('klien.portal') ? 'text-blue-100' : 'text-slate-400' }}">Lapor Kendala &amp; Status</div>
+                </div>
+            </a>
+
+            <!-- 2. Riwayat Tiket & Keluhan -->
+            <a href="{{ route('klien.riwayat') }}" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all {{ request()->routeIs('klien.riwayat') ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium' }}">
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 {{ request()->routeIs('klien.riwayat') ? 'text-white' : 'text-slate-400' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="text-xs truncate">Riwayat Tiket &amp; Keluhan</div>
+                    <div class="text-[10px] truncate {{ request()->routeIs('klien.riwayat') ? 'text-blue-100' : 'text-slate-400' }}">Linimasa Penanganan</div>
                 </div>
             </a>
         @endif

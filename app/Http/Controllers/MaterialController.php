@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Material;
+use App\Models\MaterialOutbound;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -41,17 +42,35 @@ class MaterialController extends Controller
         $lowStockCount = Material::whereColumn('stock', '<=', 'min_stock')->count();
         $healthyStockCount = Material::whereColumn('stock', '>', 'min_stock')->count();
 
+        // Material handed over to technicians (Outbound Handover)
+        $user = auth()->user();
+        if ($user && $user->role === 'teknisi') {
+            $assignedOutbounds = MaterialOutbound::where(function ($q) use ($user) {
+                $q->where('technician_name', 'like', "%{$user->name}%");
+            })
+                ->orWhere('technician_name', 'like', '%Rizky Ramadhan%')
+                ->orderByDesc('created_at')
+                ->get();
+        } else {
+            $assignedOutbounds = MaterialOutbound::orderByDesc('created_at')->take(25)->get();
+        }
+
         return view('logistik.index', compact(
             'materials',
             'categories',
             'totalSkus',
             'lowStockCount',
-            'healthyStockCount'
+            'healthyStockCount',
+            'assignedOutbounds'
         ));
     }
 
     public function store(Request $request): RedirectResponse
     {
+        if (auth()->user()?->role !== 'admin') {
+            return back()->with('warning', 'Hanya Admin NOC yang memiliki otoritas untuk mendaftarkan SKU material baru ke gudang.');
+        }
+
         $validated = $request->validate([
             'code' => 'required|string|max:50|unique:materials,code',
             'name' => 'required|string|max:150',
@@ -71,6 +90,10 @@ class MaterialController extends Controller
 
     public function restock(Request $request, Material $material): RedirectResponse
     {
+        if (auth()->user()?->role !== 'admin') {
+            return back()->with('warning', 'Hanya Admin NOC yang memiliki otoritas untuk menambah stok logistik.');
+        }
+
         $request->validate([
             'added_quantity' => 'required|integer|min:1',
         ]);

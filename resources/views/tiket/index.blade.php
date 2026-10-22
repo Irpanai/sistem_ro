@@ -119,11 +119,12 @@
                             <td class="px-6 py-4">
                                 <p class="text-xs text-slate-800 line-clamp-2">{{ $ticket->issue }}</p>
                                 @if($ticket->workOrder)
-                                    <div class="mt-1 flex items-center gap-1.5 text-[11px] text-indigo-700 font-semibold">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    <div class="mt-1 flex items-center gap-1.5 text-[11px] text-indigo-700 font-semibold flex-wrap">
+                                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                                         </svg>
-                                        Teknisi: {{ $ticket->workOrder->technician_name }} ({{ $ticket->workOrder->spk_number }})
+                                        <span>Tim: {{ $ticket->workOrder->technician_name }}</span>
+                                        <span class="text-[10px] font-mono text-slate-400">({{ $ticket->workOrder->spk_number }})</span>
                                     </div>
                                 @endif
                             </td>
@@ -145,20 +146,31 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-right">
-                                @if($ticket->status !== 'Solved')
-                                    <button onclick="openDispatchModal({{ json_encode($ticket) }})"
-                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-all hover:scale-[1.01]">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                <div class="inline-flex items-center gap-1.5">
+                                    <button onclick="openTimelineModal({{ json_encode($ticket) }})"
+                                            class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition-colors"
+                                            title="Lihat Riwayat & Log Aktivitas">
+                                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
-                                        Analisis &amp; SPK
+                                        <span>Riwayat &amp; Log</span>
                                     </button>
-                                @else
-                                    <button onclick="openDetailModal({{ json_encode($ticket) }})"
-                                            class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition-colors">
-                                        Lihat Solusi
-                                    </button>
-                                @endif
+
+                                    @if($ticket->status === 'Pending')
+                                        <button onclick="openDispatchModal({{ json_encode($ticket) }})"
+                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-all hover:scale-[1.01]">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                            </svg>
+                                            Analisis &amp; SPK
+                                        </button>
+                                    @elseif($ticket->status === 'Solved')
+                                        <button onclick="openDetailModal({{ json_encode($ticket) }})"
+                                                class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg text-xs font-semibold transition-colors">
+                                            Solusi
+                                        </button>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -341,18 +353,60 @@
                 </div>
             </div>
 
-            <!-- Penugasan Teknisi -->
+            <!-- SECTION B: Penugasan Tim Teknisi (Multi-Select) -->
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Pilih Teknisi Lapangan yang Ditugaskan *
-                </label>
-                <select name="technician_id" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-                    @foreach($technicians as $tech)
-                        <option value="{{ $tech->id }}">
-                            {{ $tech->name }} ({{ $tech->phone ?? '-' }}) — Status: [{{ $tech->technician_status ?? 'Available' }}]
-                        </option>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                        Bagian B: Penunjukan Tim Teknisi Lapangan *
+                    </label>
+                    <span class="text-[11px] text-blue-600 font-semibold bg-blue-50 px-2 py-0.5 rounded">
+                        Pilih 1 atau Banyak Personel
+                    </span>
+                </div>
+                <p class="text-[11px] text-slate-500 mb-2.5">
+                    Centang personel teknisi yang ditugaskan. Untuk gangguan kabel putus (OUTAGE), disarankan menugaskan minimal 2 personel teknisi (Team Lead &amp; Splicer).
+                </p>
+
+                <div class="space-y-2 max-h-48 overflow-y-auto p-3 bg-slate-50 rounded-xl border border-slate-200">
+                    @foreach($technicians as $idx => $tech)
+                        @php
+                            $isAvail = ($tech->technician_status ?? 'Available') === 'Available';
+                        @endphp
+                        <label class="flex items-center justify-between gap-3 p-2.5 rounded-xl border bg-white cursor-pointer transition-all hover:border-blue-300 {{ $isAvail ? 'border-slate-200/90' : 'border-amber-200 bg-amber-50/20' }}">
+                            <div class="flex items-center gap-2.5">
+                                <input type="checkbox" name="technician_ids[]" value="{{ $tech->id }}"
+                                       class="rounded text-blue-600 focus:ring-blue-500 w-4 h-4 tech-select-cb"
+                                       {{ $idx === 0 ? 'checked' : '' }}>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold text-xs text-slate-900">{{ $tech->name }}</span>
+                                        <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded {{ $isAvail ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-blue-50 text-blue-700 border border-blue-200' }}">
+                                            ● {{ $tech->technician_status ?? 'Available' }}
+                                        </span>
+                                    </div>
+                                    <span class="text-[11px] text-slate-400 block mt-0.5">
+                                        {{ $tech->phone ?? '-' }} &bull; Area: {{ $tech->area ?? 'Banjarmasin' }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-1.5">
+                                <label class="text-[10px] text-slate-500 flex items-center gap-1 cursor-pointer bg-slate-50 px-2 py-1 rounded-lg border border-slate-200">
+                                    <input type="radio" name="lead_technician_id" value="{{ $tech->id }}" {{ $idx === 0 ? 'checked' : '' }}>
+                                    <span class="font-semibold text-slate-700">Ketua Tim</span>
+                                </label>
+                            </div>
+                        </label>
                     @endforeach
-                </select>
+                </div>
+
+                <div class="mt-2.5">
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">
+                        Catatan Khusus Instruksi NOC untuk Tim Teknisi (Opsional)
+                    </label>
+                    <input type="text" name="admin_dispatch_notes" placeholder="Contoh: Tim diminta membawa tangga teleskopik 6m dan genset portable..."
+                           class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                </div>
             </div>
 
             <!-- SECTION C: Material Handover (Alokasi Gudang) -->
@@ -398,36 +452,72 @@
     </div>
 </div>
 
-<!-- Modal 3: Detail Solusi Tiket Selesai -->
-<div id="modalDetail" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-            <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                Tiket Telah Selesai (Solved)
-            </h3>
-            <button onclick="document.getElementById('modalDetail').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+<!-- Modal 4: Riwayat Lengkap & Log Perjalanan Tiket (Timeline) -->
+<div id="modalTimeline" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col">
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4 shrink-0">
+            <div>
+                <div class="flex items-center gap-2">
+                    <span id="tlTicketNumber" class="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-lg border border-blue-200"></span>
+                    <span id="tlStatusBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full"></span>
+                    <span id="tlTypeBadge" class="text-[11px] font-bold px-2 py-0.5 rounded-md"></span>
+                </div>
+                <h3 class="font-bold text-slate-900 text-base mt-1.5 flex items-center gap-2">
+                    Riwayat Perjalanan &amp; Log Detail Tiket
+                </h3>
+            </div>
+            <button onclick="document.getElementById('modalTimeline').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
         </div>
 
-        <div class="space-y-3 mt-4 text-xs">
-            <div>
-                <span class="text-slate-400">Nomor SPK:</span>
-                <p id="detSpk" class="text-xs font-bold text-slate-900 font-mono"></p>
+        <!-- Scrollable Content -->
+        <div class="overflow-y-auto flex-1 py-4 space-y-4 pr-1">
+            <!-- Summary Info Box -->
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                    <span class="text-slate-400 block text-[10px] uppercase font-semibold">Pelanggan &amp; Lokasi</span>
+                    <p id="tlCustomer" class="font-bold text-slate-900 mt-0.5"></p>
+                    <p id="tlAddress" class="text-slate-600 text-[11px]"></p>
+                </div>
+                <div>
+                    <span class="text-slate-400 block text-[10px] uppercase font-semibold">Simpul ODP Terhubung</span>
+                    <p id="tlOdp" class="font-bold font-mono text-blue-700 mt-0.5"></p>
+                    <p id="tlIssue" class="text-slate-600 text-[11px] line-clamp-2"></p>
+                </div>
             </div>
-            <div>
-                <span class="text-slate-400">Teknisi Penanggung Jawab:</span>
-                <p id="detTech" class="text-xs font-semibold text-slate-800"></p>
+
+            <!-- Team Technicians Assigned Card (if any) -->
+            <div id="tlTeamCard" class="hidden bg-indigo-50/70 p-4 rounded-2xl border border-indigo-100 text-xs">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="font-bold text-indigo-950 flex items-center gap-1.5 text-xs">
+                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        Tim Teknisi Lapangan Bertugas
+                    </span>
+                    <span id="tlSpkNumber" class="font-mono font-bold text-[11px] text-indigo-700 bg-white px-2 py-0.5 rounded border border-indigo-200"></span>
+                </div>
+                <div id="tlTechList" class="flex flex-wrap gap-2 mt-2"></div>
             </div>
+
+            <!-- Activity Logs Timeline -->
             <div>
-                <span class="text-slate-400">Catatan Tindakan Teknis:</span>
-                <div id="detNotes" class="mt-1 p-3 bg-emerald-50/70 text-emerald-950 rounded-xl border border-emerald-100 text-xs leading-relaxed font-mono"></div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 mb-3 flex items-center justify-between">
+                    <span>Linimasa Riwayat Penanganan</span>
+                    <span class="text-[10px] text-slate-400 font-normal">Audit Log Berurutan Waktu</span>
+                </h4>
+
+                <div id="tlLogsContainer" class="relative pl-6 space-y-4 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
+                    <!-- Dynamic Log Items Injected via JS -->
+                </div>
             </div>
         </div>
 
-        <div class="pt-4 mt-4 border-t border-slate-100 flex justify-end">
-            <button type="button" onclick="document.getElementById('modalDetail').classList.add('hidden')"
-                    class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-medium transition-colors">
-                Tutup
+        <!-- Footer -->
+        <div class="pt-4 border-t border-slate-100 flex justify-end shrink-0">
+            <button type="button" onclick="document.getElementById('modalTimeline').classList.add('hidden')"
+                    class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors">
+                Tutup Jendela Riwayat
             </button>
         </div>
     </div>
@@ -523,6 +613,117 @@ function openDetailModal(ticket) {
         ? ticket.work_order.tech_notes 
         : 'Perbaikan selesai dilaksanakan dan sinyal redaman pelanggan kembali normal.';
     document.getElementById('modalDetail').classList.remove('hidden');
+}
+
+function openTimelineModal(ticket) {
+    document.getElementById('tlTicketNumber').innerText = ticket.ticket_number;
+    
+    // Status Badge
+    const stEl = document.getElementById('tlStatusBadge');
+    stEl.innerText = ticket.status;
+    if (ticket.status === 'Solved') {
+        stEl.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200';
+    } else if (ticket.status === 'In Progress') {
+        stEl.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200 animate-pulse';
+    } else {
+        stEl.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200';
+    }
+
+    // Type Badge
+    const tpEl = document.getElementById('tlTypeBadge');
+    tpEl.innerText = ticket.type;
+    tpEl.className = ticket.type === 'OUTAGE'
+        ? 'text-[11px] font-bold px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200'
+        : 'text-[11px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200';
+
+    document.getElementById('tlCustomer').innerText = ticket.customer_name + ' (' + (ticket.customer_phone || '-') + ')';
+    document.getElementById('tlAddress').innerText = ticket.address + ', ' + ticket.area;
+    document.getElementById('tlOdp').innerText = ticket.odp_code;
+    document.getElementById('tlIssue').innerText = ticket.issue;
+
+    // Team Card
+    const teamCard = document.getElementById('tlTeamCard');
+    const techListEl = document.getElementById('tlTechList');
+    techListEl.innerHTML = '';
+
+    if (ticket.work_order) {
+        teamCard.classList.remove('hidden');
+        document.getElementById('tlSpkNumber').innerText = ticket.work_order.spk_number;
+
+        if (ticket.work_order.technicians && ticket.work_order.technicians.length > 0) {
+            ticket.work_order.technicians.forEach(t => {
+                const isLead = t.role_in_team === 'Team Lead';
+                techListEl.innerHTML += `
+                    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white border border-indigo-200 text-xs shadow-xs">
+                        <span class="w-2 h-2 rounded-full ${isLead ? 'bg-indigo-600' : 'bg-blue-400'}"></span>
+                        <strong class="text-slate-800">${t.technician_name}</strong>
+                        <span class="text-[10px] ${isLead ? 'bg-indigo-100 text-indigo-700 font-bold' : 'bg-slate-100 text-slate-500'} px-1.5 py-0.2 rounded">
+                            ${t.role_in_team || 'Teknisi'}
+                        </span>
+                    </div>
+                `;
+            });
+        } else {
+            techListEl.innerHTML = `
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white border border-indigo-200 text-xs">
+                    <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+                    <strong class="text-slate-800">${ticket.work_order.technician_name}</strong>
+                </div>
+            `;
+        }
+    } else {
+        teamCard.classList.add('hidden');
+    }
+
+    // Render Logs
+    const container = document.getElementById('tlLogsContainer');
+    container.innerHTML = '';
+
+    const logs = ticket.ticket_logs || [];
+    if (logs.length > 0) {
+        logs.forEach(log => {
+            const roleBadgeColor = log.actor_role === 'admin' 
+                ? 'bg-blue-50 text-blue-700 border-blue-200' 
+                : (log.actor_role === 'teknisi' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200');
+
+            const dateStr = log.created_at ? new Date(log.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : '-';
+
+            container.innerHTML += `
+                <div class="relative">
+                    <div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-blue-600 ring-4 ring-white"></div>
+                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-xs space-y-1.5">
+                        <div class="flex items-center justify-between gap-2 flex-wrap">
+                            <span class="font-bold text-xs text-slate-900">${log.title}</span>
+                            <span class="text-[10px] text-slate-400 font-mono">${dateStr} WITA</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${roleBadgeColor}">
+                                ${log.actor_name}
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-700 leading-relaxed font-sans">${log.description}</p>
+                        ${log.notes ? `
+                            <div class="mt-2 p-2.5 rounded-xl bg-slate-50 text-[11px] text-slate-600 border border-slate-200/70 font-mono">
+                                <strong>Catatan Teknis:</strong> ${log.notes}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        });
+    } else {
+        container.innerHTML = `
+            <div class="relative">
+                <div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-blue-600 ring-4 ring-white"></div>
+                <div class="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-xs">
+                    <p class="font-bold text-xs text-slate-900">Tiket Terdaftar di Sistem</p>
+                    <p class="text-xs text-slate-500 mt-1">Laporan berhasil dicatat dan masuk dalam antrean pemantauan NOC.</p>
+                </div>
+            </div>
+        `;
+    }
+
+    document.getElementById('modalTimeline').classList.remove('hidden');
 }
 </script>
 @endsection

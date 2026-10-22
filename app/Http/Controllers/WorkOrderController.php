@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\MaterialOutbound;
+use App\Models\TicketLog;
+use App\Models\User;
 use App\Models\WorkOrder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -35,16 +37,39 @@ class WorkOrderController extends Controller
             MaterialOutbound::where('work_order_id', $workOrder->id)
                 ->update(['status' => 'Used & Completed']);
 
-            // 4. Update Technician Status if all active SPKs are done
-            if ($workOrder->technician_id) {
-                $hasActiveSpk = WorkOrder::where('technician_id', $workOrder->technician_id)
-                    ->where('status', 'In Progress')
+            // 4. Update Technicians Status if all active SPKs are done
+            $techUserIds = $workOrder->technicians()->pluck('user_id')->toArray();
+            if ($workOrder->technician_id && ! in_array($workOrder->technician_id, $techUserIds)) {
+                $techUserIds[] = $workOrder->technician_id;
+            }
+
+            foreach ($techUserIds as $techId) {
+                $hasActiveSpk = WorkOrder::where('status', 'In Progress')
+                    ->where(function ($q) use ($techId) {
+                        $q->where('technician_id', $techId)
+                            ->orWhereHas('technicians', function ($tq) use ($techId) {
+                                $tq->where('user_id', $techId);
+                            });
+                    })
                     ->exists();
 
                 if (! $hasActiveSpk) {
-                    $workOrder->technician->update(['technician_status' => 'Available']);
+                    User::where('id', $techId)->update(['technician_status' => 'Available']);
                 }
             }
+
+            // 5. Create TicketLog
+            TicketLog::create([
+                'ticket_id' => $workOrder->ticket_id,
+                'work_order_id' => $workOrder->id,
+                'user_id' => auth()->id(),
+                'actor_name' => auth()->user()?->name ?? $workOrder->technician_name,
+                'actor_role' => 'teknisi',
+                'action' => 'TICKET_SOLVED',
+                'title' => 'Perbaikan Lapangan Selesai (Solved)',
+                'description' => "Tim Teknisi ({$workOrder->technician_name}) telah menyelesaikan perbaikan lapangan pada titik {$workOrder->ticket->odp_code}. Seluruh koneksi pelanggan kembali normal.",
+                'notes' => $request->tech_notes,
+            ]);
         });
 
         return back()->with('success', "Pekerjaan untuk SPK {$workOrder->spk_number} telah ditandai Selesai (Solved).");

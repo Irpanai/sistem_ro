@@ -8,6 +8,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TechnicianPortalController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TopologyController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\WorkOrderController;
 use Illuminate\Support\Facades\Route;
 
@@ -49,9 +50,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/export-csv', [ReportController::class, 'exportCsv'])->name('laporan.export');
 
-    // Role Portals
+    // 6. Manajemen User (Admin NOC)
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+    // Role Portals & Riwayat
     Route::get('/klien/portal', [ClientPortalController::class, 'index'])->name('klien.portal');
+    Route::get('/klien/riwayat', [ClientPortalController::class, 'history'])->name('klien.riwayat');
     Route::post('/klien/lapor', [ClientPortalController::class, 'storeComplaint'])->name('klien.lapor');
 
     Route::get('/teknisi/portal', [TechnicianPortalController::class, 'index'])->name('teknisi.portal');
+    Route::get('/teknisi/riwayat', [TechnicianPortalController::class, 'history'])->name('teknisi.riwayat');
 });

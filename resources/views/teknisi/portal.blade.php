@@ -49,35 +49,57 @@
             <div>
                 <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Total SPK Selesai (Solved)</p>
                 <h3 class="text-3xl font-extrabold text-emerald-600 mt-1 font-mono">{{ $solvedCount }} <span class="text-xs font-normal text-slate-500 font-sans">Tiket Teratasi</span></h3>
-                <p class="text-xs text-emerald-600 font-medium mt-1">Kinerja lapangan bulan ini</p>
+                <a href="{{ route('teknisi.riwayat') }}" class="inline-flex items-center gap-1 text-xs text-emerald-700 font-bold hover:underline mt-1.5">
+                    <span>Kroscek &amp; Lihat Riwayat Selesai</span>
+                    <span>&rarr;</span>
+                </a>
             </div>
-            <div class="w-11 h-11 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
+            <a href="{{ route('teknisi.riwayat') }}" class="w-11 h-11 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center hover:bg-emerald-100 transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-            </div>
+            </a>
         </div>
     </div>
 
-    <!-- Work Orders List -->
+    <!-- Work Orders List with Filter Tabs -->
     <div class="space-y-4">
-        <div class="flex items-center justify-between">
-            <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
                 <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                 </svg>
-                Daftar Surat Perintah Kerja (SPK) Lapangan
-            </h2>
-            <span class="text-xs text-slate-500 font-semibold">{{ $workOrders->count() }} Total SPK</span>
+                <h2 class="text-base sm:text-lg font-bold text-slate-900">
+                    Daftar Surat Perintah Kerja (SPK) Lapangan
+                </h2>
+            </div>
+
+            <!-- Tab Filter Buttons -->
+            <div class="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold self-start sm:self-auto">
+                <button type="button" onclick="filterSpk('all')" id="tab-spk-all"
+                        class="tab-spk-btn px-3.5 py-1.5 rounded-lg bg-white text-blue-700 shadow-xs transition-all">
+                    Semua SPK ({{ $workOrders->count() }})
+                </button>
+                <button type="button" onclick="filterSpk('active')" id="tab-spk-active"
+                        class="tab-spk-btn px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">
+                    Tugas Aktif ({{ $activeCount }})
+                </button>
+                <button type="button" onclick="filterSpk('solved')" id="tab-spk-solved"
+                        class="tab-spk-btn px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">
+                    Riwayat Selesai ({{ $solvedCount }})
+                </button>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-5">
+        <div class="grid grid-cols-1 gap-5" id="spkCardsContainer">
             @forelse($workOrders as $wo)
                 @php
                     $isOutage = $wo->ticket && $wo->ticket->type === 'OUTAGE';
                     $isSolved = $wo->status === 'Solved';
+                    $ticketJson = $wo->ticket ? json_encode($wo->ticket) : '{}';
                 @endphp
-                <div class="bg-white rounded-2xl border {{ $isSolved ? 'border-slate-200/90' : 'border-blue-300 ring-2 ring-blue-500/10' }} p-6 shadow-xs space-y-4">
+                <div class="spk-card bg-white rounded-2xl border {{ $isSolved ? 'border-slate-200/90' : 'border-blue-300 ring-2 ring-blue-500/10' }} p-6 shadow-xs space-y-4"
+                     data-status="{{ $isSolved ? 'solved' : 'active' }}">
                     <!-- Top SPK Header -->
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
                         <div class="flex items-center gap-2 flex-wrap">
@@ -98,19 +120,58 @@
                             @endif
                         </div>
 
-                        <div>
+                        <div class="flex items-center gap-2">
+                            <!-- Button Riwayat & Log -->
+                            <button type="button" onclick="openTechTimelineModal({{ htmlspecialchars($ticketJson, ENT_QUOTES, 'UTF-8') }})"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition-all border border-indigo-200/60"
+                                    title="Lihat Linimasa & Riwayat Tiket">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>Riwayat &amp; Log</span>
+                            </button>
+
                             @if($isSolved)
                                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                    Solved (Selesai Dikerjakan)
+                                    Solved (Selesai)
                                 </span>
                             @else
                                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200 animate-pulse">
                                     <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
-                                    In Progress (Perlu Tindakan)
+                                    In Progress (Aktif)
                                 </span>
                             @endif
                         </div>
+                    </div>
+
+                    <!-- Tim Teknisi Bertugas (Multi-Teknisi Info) -->
+                    <div class="bg-blue-50/60 border border-blue-100 p-3 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-[10px] font-bold text-blue-900 uppercase tracking-wider flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                                Tim Teknisi Bertugas:
+                            </span>
+                            @if($wo->technicians && $wo->technicians->count() > 0)
+                                @foreach($wo->technicians as $tech)
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold {{ $tech->is_lead ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-white text-slate-800 border border-slate-200' }}">
+                                        @if($tech->is_lead)
+                                            <span class="text-amber-600">👑 Lead:</span>
+                                        @else
+                                            <span class="text-blue-600">👤 Tim:</span>
+                                        @endif
+                                        <span>{{ $tech->technician_name }}</span>
+                                    </span>
+                                @endforeach
+                            @else
+                                <span class="font-bold text-blue-950">{{ $wo->technician_name ?: 'Teknisi Siaga' }}</span>
+                            @endif
+                        </div>
+                        <span class="text-[11px] text-blue-700 font-mono">
+                            Diterbitkan: {{ $wo->dispatched_at ? $wo->dispatched_at->format('d/m/Y H:i') : $wo->created_at->format('d/m/Y H:i') }} WITA
+                        </span>
                     </div>
 
                     <!-- Client & Location Info -->
@@ -202,7 +263,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
-                    <h3 class="font-bold text-slate-900 text-base">Tidak Ada SPK Aktif</h3>
+                    <h3 class="font-bold text-slate-900 text-base">Tidak Ada SPK</h3>
                     <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
                         Saat ini belum ada penugasan baru dari tim NOC. Anda berada dalam status siaga (Available).
                     </p>
@@ -284,16 +345,226 @@
     </div>
 </div>
 
+<!-- Modal Riwayat & Linimasa Tiket untuk Teknisi -->
+<div id="modalTechTimeline" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 duration-150">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4 shrink-0">
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg" id="techTlTicketNumber"></span>
+                    <span id="techTlStatusBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full"></span>
+                    <span id="techTlTypeBadge" class="text-[11px] font-bold px-2 py-0.5 rounded-md"></span>
+                </div>
+                <h3 class="font-bold text-slate-900 text-base mt-2">Riwayat &amp; Linimasa Penanganan Gangguan</h3>
+            </div>
+            <button onclick="document.getElementById('modalTechTimeline').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+        </div>
+
+        <div class="overflow-y-auto space-y-4 py-4 pr-1">
+            <!-- Ticket Info Card -->
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 text-xs space-y-2">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div>
+                        <span class="text-slate-400 font-semibold uppercase text-[10px] block">Pelanggan</span>
+                        <strong class="text-slate-900 text-xs" id="techTlCustomer"></strong>
+                    </div>
+                    <div>
+                        <span class="text-slate-400 font-semibold uppercase text-[10px] block">Simpul Topologi ODP</span>
+                        <strong class="text-slate-900 font-mono text-xs" id="techTlOdp"></strong>
+                    </div>
+                </div>
+                <div>
+                    <span class="text-slate-400 font-semibold uppercase text-[10px] block">Alamat</span>
+                    <p class="text-slate-700" id="techTlAddress"></p>
+                </div>
+                <div>
+                    <span class="text-slate-400 font-semibold uppercase text-[10px] block">Gejala Gangguan</span>
+                    <p class="text-slate-800 font-medium" id="techTlIssue"></p>
+                </div>
+            </div>
+
+            <!-- Team Assigned Card -->
+            <div id="techTlTeamCard" class="bg-indigo-50/60 p-4 rounded-xl border border-indigo-100 text-xs space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-indigo-900 font-bold uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-indigo-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        Tim Teknisi Bertugas (SPK: <span id="techTlSpkNumber" class="font-mono"></span>)
+                    </span>
+                </div>
+                <div id="techTlTechList" class="flex flex-wrap gap-2 pt-1">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Timeline Stream -->
+            <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 mb-3 flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Linimasa Aktivitas &amp; Log Lapangan
+                </h4>
+
+                <div class="relative pl-6 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200" id="techTlLogsContainer">
+                    <!-- Dynamic logs -->
+                </div>
+            </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end shrink-0">
+            <button type="button" onclick="document.getElementById('modalTechTimeline').classList.add('hidden')"
+                    class="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors">
+                Tutup Linimasa
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
 let techMap = null;
 let techMarker = null;
 const allNodes = @json($allNodes ?? []);
+
+function filterSpk(status) {
+    const cards = document.querySelectorAll('.spk-card');
+    cards.forEach(card => {
+        if (status === 'all') {
+            card.style.display = 'block';
+        } else {
+            card.style.display = card.getAttribute('data-status') === status ? 'block' : 'none';
+        }
+    });
+
+    // Update active tab button style
+    document.querySelectorAll('.tab-spk-btn').forEach(btn => {
+        btn.className = 'tab-spk-btn px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all';
+    });
+    const activeBtn = document.getElementById('tab-spk-' + status);
+    if (activeBtn) {
+        activeBtn.className = 'tab-spk-btn px-3.5 py-1.5 rounded-lg bg-white text-blue-700 shadow-xs transition-all font-bold';
+    }
+}
 
 function openResolveModal(id, spkNumber, customerName) {
     document.getElementById('formResolve').action = '/spk/' + id + '/resolve';
     document.getElementById('resSpkNumber').innerText = spkNumber;
     document.getElementById('resCustomerName').innerText = customerName;
     document.getElementById('modalResolve').classList.remove('hidden');
+}
+
+function openTechTimelineModal(ticket) {
+    if (!ticket || !ticket.ticket_number) return;
+
+    document.getElementById('techTlTicketNumber').innerText = ticket.ticket_number;
+    
+    // Status Badge
+    const stEl = document.getElementById('techTlStatusBadge');
+    stEl.innerText = ticket.status;
+    if (ticket.status === 'Solved') {
+        stEl.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200';
+    } else if (ticket.status === 'In Progress') {
+        stEl.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200 animate-pulse';
+    } else {
+        stEl.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200';
+    }
+
+    // Type Badge
+    const tpEl = document.getElementById('techTlTypeBadge');
+    tpEl.innerText = ticket.type;
+    tpEl.className = ticket.type === 'OUTAGE'
+        ? 'text-[11px] font-bold px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200'
+        : 'text-[11px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200';
+
+    document.getElementById('techTlCustomer').innerText = ticket.customer_name + (ticket.customer_phone ? ' (' + ticket.customer_phone + ')' : '');
+    document.getElementById('techTlAddress').innerText = (ticket.address || '') + (ticket.area ? ', ' + ticket.area : '');
+    document.getElementById('techTlOdp').innerText = ticket.odp_code || '-';
+    document.getElementById('techTlIssue').innerText = ticket.issue || '-';
+
+    // Team Card
+    const teamCard = document.getElementById('techTlTeamCard');
+    const techListEl = document.getElementById('techTlTechList');
+    techListEl.innerHTML = '';
+
+    if (ticket.work_order) {
+        teamCard.classList.remove('hidden');
+        document.getElementById('techTlSpkNumber').innerText = ticket.work_order.spk_number || '-';
+
+        if (ticket.work_order.technicians && ticket.work_order.technicians.length > 0) {
+            ticket.work_order.technicians.forEach(t => {
+                const isLead = t.role_in_team === 'Team Lead';
+                techListEl.innerHTML += `
+                    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white border border-indigo-200 text-xs shadow-xs">
+                        <span class="w-2 h-2 rounded-full ${isLead ? 'bg-amber-500' : 'bg-blue-500'}"></span>
+                        <strong class="text-slate-800">${t.technician_name}</strong>
+                        <span class="text-[10px] ${isLead ? 'bg-amber-100 text-amber-800 font-bold' : 'bg-slate-100 text-slate-600'} px-1.5 py-0.5 rounded">
+                            ${t.role_in_team || 'Teknisi'}
+                        </span>
+                    </div>
+                `;
+            });
+        } else if (ticket.work_order.technician_name) {
+            techListEl.innerHTML = `
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white border border-indigo-200 text-xs">
+                    <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                    <strong class="text-slate-800">${ticket.work_order.technician_name}</strong>
+                </div>
+            `;
+        }
+    } else {
+        teamCard.classList.add('hidden');
+    }
+
+    // Render Logs
+    const container = document.getElementById('techTlLogsContainer');
+    container.innerHTML = '';
+
+    const logs = ticket.ticket_logs || [];
+    if (logs.length > 0) {
+        logs.forEach(log => {
+            const roleBadgeColor = log.actor_role === 'admin' 
+                ? 'bg-blue-50 text-blue-700 border-blue-200' 
+                : (log.actor_role === 'teknisi' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200');
+
+            const dateStr = log.created_at ? new Date(log.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : '-';
+
+            container.innerHTML += `
+                <div class="relative">
+                    <div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-blue-600 ring-4 ring-white"></div>
+                    <div class="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-xs space-y-1.5">
+                        <div class="flex items-center justify-between gap-2 flex-wrap">
+                            <span class="font-bold text-xs text-slate-900">${log.title}</span>
+                            <span class="text-[10px] text-slate-400 font-mono">${dateStr} WITA</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${roleBadgeColor}">
+                                ${log.actor_name} (${log.actor_role.toUpperCase()})
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-700 leading-relaxed font-sans">${log.description}</p>
+                        ${log.notes ? `
+                            <div class="mt-2 p-2.5 rounded-xl bg-slate-50 text-[11px] text-slate-600 border border-slate-200/70 font-mono">
+                                <strong>Catatan:</strong> ${log.notes}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        });
+    } else {
+        container.innerHTML = `
+            <div class="relative">
+                <div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-blue-600 ring-4 ring-white"></div>
+                <div class="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-xs">
+                    <p class="font-bold text-xs text-slate-900">Tiket Terdaftar di Sistem</p>
+                    <p class="text-xs text-slate-500 mt-1">Laporan berhasil dicatat dan masuk dalam antrean pemantauan NOC.</p>
+                </div>
+            </div>
+        `;
+    }
+
+    document.getElementById('modalTechTimeline').classList.remove('hidden');
 }
 
 function openTechOdpMap(odpCode, customerName, address) {

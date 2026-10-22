@@ -79,4 +79,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(WorkOrder::class, 'technician_id');
     }
+
+    public function workOrderAssignments(): HasMany
+    {
+        return $this->hasMany(WorkOrderTechnician::class);
+    }
 }

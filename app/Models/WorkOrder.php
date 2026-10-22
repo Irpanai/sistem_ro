@@ -45,4 +45,14 @@ class WorkOrder extends Model
     {
         return $this->hasMany(MaterialOutbound::class);
     }
+
+    public function technicians(): HasMany
+    {
+        return $this->hasMany(WorkOrderTechnician::class);
+    }
+
+    public function ticketLogs(): HasMany
+    {
+        return $this->hasMany(TicketLog::class)->orderBy('created_at', 'asc');
+    }
 }

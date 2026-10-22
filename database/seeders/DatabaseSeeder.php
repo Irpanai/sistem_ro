@@ -5,9 +5,11 @@ namespace Database\Seeders;
 use App\Models\Material;
 use App\Models\MaterialOutbound;
 use App\Models\Ticket;
+use App\Models\TicketLog;
 use App\Models\TopologyNode;
 use App\Models\User;
 use App\Models\WorkOrder;
+use App\Models\WorkOrderTechnician;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -256,13 +258,22 @@ class DatabaseSeeder extends Seeder
             [
                 'ticket_id' => $ticket2->id,
                 'technician_id' => $tech2->id,
-                'technician_name' => $tech2->name,
+                'technician_name' => "{$tech2->name}, {$tech4->name}",
                 'technician_phone' => $tech2->phone,
                 'status' => 'In Progress',
                 'tech_notes' => null,
                 'dispatched_at' => now()->subHours(1),
                 'resolved_at' => null,
             ]
+        );
+
+        WorkOrderTechnician::updateOrCreate(
+            ['work_order_id' => $spk2->id, 'user_id' => $tech2->id],
+            ['technician_name' => $tech2->name, 'technician_phone' => $tech2->phone, 'role_in_team' => 'Team Lead']
+        );
+        WorkOrderTechnician::updateOrCreate(
+            ['work_order_id' => $spk2->id, 'user_id' => $tech4->id],
+            ['technician_name' => $tech4->name, 'technician_phone' => $tech4->phone, 'role_in_team' => 'Teknisi Pendamping']
         );
 
         $spk4 = WorkOrder::updateOrCreate(
@@ -279,18 +290,32 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        WorkOrderTechnician::updateOrCreate(
+            ['work_order_id' => $spk4->id, 'user_id' => $tech1->id],
+            ['technician_name' => $tech1->name, 'technician_phone' => $tech1->phone, 'role_in_team' => 'Lead PIC']
+        );
+
         $spk5 = WorkOrder::updateOrCreate(
             ['spk_number' => 'SPK-2026-BJM-014'],
             [
                 'ticket_id' => $ticket5->id,
                 'technician_id' => $tech1->id,
-                'technician_name' => $tech1->name,
+                'technician_name' => "{$tech1->name}, {$tech3->name}",
                 'technician_phone' => $tech1->phone,
                 'status' => 'Solved',
                 'tech_notes' => 'Telah dilakukan penarikan ulang kabel dropcore sepanjang 65 meter dan pemasangan suspension baru. Redaman akhir -18.2 dBm stabil.',
                 'dispatched_at' => now()->subDay()->addHours(1),
                 'resolved_at' => now()->subDay()->addHours(3),
             ]
+        );
+
+        WorkOrderTechnician::updateOrCreate(
+            ['work_order_id' => $spk5->id, 'user_id' => $tech1->id],
+            ['technician_name' => $tech1->name, 'technician_phone' => $tech1->phone, 'role_in_team' => 'Team Lead']
+        );
+        WorkOrderTechnician::updateOrCreate(
+            ['work_order_id' => $spk5->id, 'user_id' => $tech3->id],
+            ['technician_name' => $tech3->name, 'technician_phone' => $tech3->phone, 'role_in_team' => 'Teknisi Splicer']
         );
 
         // 6. Seed Material Outbounds
@@ -307,11 +332,11 @@ class DatabaseSeeder extends Seeder
                 'spk_number' => $spk5->spk_number,
                 'ticket_number' => $ticket5->ticket_number,
                 'customer_name' => $ticket5->customer_name,
-                'technician_name' => $tech1->name,
+                'technician_name' => "{$tech1->name}, {$tech3->name}",
                 'material_name' => 'Kabel Dropcore 1 Core (1000m)',
                 'quantity' => 1,
                 'unit' => 'Roll',
-                'approved_by' => 'Admin NOC',
+                'approved_by' => 'Admin NOC Pusat',
                 'status' => 'Used & Completed',
             ]
         );
@@ -325,11 +350,11 @@ class DatabaseSeeder extends Seeder
                 'spk_number' => $spk5->spk_number,
                 'ticket_number' => $ticket5->ticket_number,
                 'customer_name' => $ticket5->customer_name,
-                'technician_name' => $tech1->name,
+                'technician_name' => "{$tech1->name}, {$tech3->name}",
                 'material_name' => 'Fast Connector SC/UPC Biru',
                 'quantity' => 2,
                 'unit' => 'Pcs',
-                'approved_by' => 'Admin NOC',
+                'approved_by' => 'Admin NOC Pusat',
                 'status' => 'Used & Completed',
             ]
         );
@@ -343,11 +368,11 @@ class DatabaseSeeder extends Seeder
                 'spk_number' => $spk2->spk_number,
                 'ticket_number' => $ticket2->ticket_number,
                 'customer_name' => $ticket2->customer_name,
-                'technician_name' => $tech2->name,
+                'technician_name' => "{$tech2->name}, {$tech4->name}",
                 'material_name' => 'Fast Connector SC/UPC Biru',
                 'quantity' => 2,
                 'unit' => 'Pcs',
-                'approved_by' => 'Admin NOC',
+                'approved_by' => 'Admin NOC Pusat',
                 'status' => 'In Field Handover',
             ]
         );
@@ -365,8 +390,126 @@ class DatabaseSeeder extends Seeder
                 'material_name' => 'Modem ONU GPON ZTE F609',
                 'quantity' => 1,
                 'unit' => 'Unit',
-                'approved_by' => 'Admin NOC',
+                'approved_by' => 'Admin NOC Pusat',
                 'status' => 'In Field Handover',
+            ]
+        );
+
+        // 7. Seed Ticket Activity Logs (Timeline)
+        // Ticket 1 (Pending)
+        TicketLog::updateOrCreate(
+            ['ticket_id' => $ticket1->id, 'action' => 'TICKET_CREATED'],
+            [
+                'user_id' => $client1->id,
+                'actor_name' => $ticket1->customer_name,
+                'actor_role' => 'klien',
+                'title' => 'Laporan Dibuat oleh Pelanggan',
+                'description' => "Pengaduan masuk dari pelanggan {$ticket1->customer_name} via portal mandiri. Gejala: {$ticket1->issue}. Titik simpul: {$ticket1->odp_code}.",
+                'notes' => 'Nomor WhatsApp Pelanggan: '.$ticket1->customer_phone,
+                'created_at' => $ticket1->reported_at,
+            ]
+        );
+
+        // Ticket 2 (In Progress - Multi-Teknisi)
+        TicketLog::updateOrCreate(
+            ['ticket_id' => $ticket2->id, 'action' => 'TICKET_CREATED'],
+            [
+                'user_id' => $client2->id,
+                'actor_name' => $ticket2->customer_name,
+                'actor_role' => 'klien',
+                'title' => 'Laporan Dibuat oleh Pelanggan',
+                'description' => "Pengaduan masuk dari pelanggan {$ticket2->customer_name}. Gejala: {$ticket2->issue}.",
+                'notes' => 'Nomor WhatsApp Pelanggan: '.$ticket2->customer_phone,
+                'created_at' => $ticket2->reported_at,
+            ]
+        );
+        TicketLog::updateOrCreate(
+            ['ticket_id' => $ticket2->id, 'action' => 'SPK_DISPATCHED'],
+            [
+                'work_order_id' => $spk2->id,
+                'user_id' => $admin->id,
+                'actor_name' => 'Admin NOC Pusat',
+                'actor_role' => 'admin',
+                'title' => 'SPK Diterbitkan & Tim Teknisi Ditugaskan',
+                'description' => "Admin NOC menerbitkan {$spk2->spk_number} dan menugaskan Tim Teknisi ({$spk2->technician_name}). Status tim: Sedang bertugas melakukan perbaikan lapangan pada {$ticket2->odp_code} ({$ticket2->address}).",
+                'notes' => 'Logistik Diserahkan: 2 Pcs Fast Connector SC/UPC Biru. Bawa tangga & optical power meter (OPM).',
+                'created_at' => $spk2->dispatched_at,
+            ]
+        );
+
+        // Ticket 3 (Pending - CV Borneo Mandiri)
+        TicketLog::updateOrCreate(
+            ['ticket_id' => $ticket3->id, 'action' => 'TICKET_CREATED'],
+            [
+                'actor_name' => $ticket3->customer_name,
+                'actor_role' => 'klien',
+                'title' => 'Laporan Tiket Didaftarkan',
+                'description' => "Pengaduan masuk untuk {$ticket3->customer_name}. Gejala: {$ticket3->issue}. Status: Menunggu penugasan tim teknisi dari NOC.",
+                'notes' => 'Tingkat Prioritas: Critical (Kantor Operasional)',
+                'created_at' => $ticket3->reported_at,
+            ]
+        );
+
+        // Ticket 4 (In Progress - Ahmad Baihaki)
+        TicketLog::updateOrCreate(
+            ['ticket_id' => $ticket4->id, 'action' => 'TICKET_CREATED'],
+            [
+                'actor_name' => $ticket4->customer_name,
+                'actor_role' => 'klien',
+                'title' => 'Laporan Tiket Didaftarkan',
+                'description' => "Pengaduan masuk untuk {$ticket4->customer_name}. Gejala: {$ticket4->issue}.",
+                'created_at' => $ticket4->reported_at,
+            ]
+        );
+        TicketLog::updateOrCreate(
+            ['ticket_id' => $ticket4->id, 'action' => 'SPK_DISPATCHED'],
+            [
+                'work_order_id' => $spk4->id,
+                'user_id' => $admin->id,
+                'actor_name' => 'Admin NOC Pusat',
+                'actor_role' => 'admin',
+                'title' => 'SPK Diterbitkan & Teknisi Ditugaskan',
+                'description' => "Admin NOC menerbitkan {$spk4->spk_number} dan menugaskan Teknisi ({$spk4->technician_name}). Status: Menuju lokasi pelanggan untuk penggantian unit modem ONT GPON.",
+                'notes' => 'Logistik Diserahkan: 1 Unit Modem GPON ZTE F609 baru.',
+                'created_at' => $spk4->dispatched_at,
+            ]
+        );
+
+        // Ticket 5 (Solved - Klinik Medika Sehat)
+        TicketLog::updateOrCreate(
+            ['ticket_id' => $ticket5->id, 'action' => 'TICKET_CREATED'],
+            [
+                'actor_name' => $ticket5->customer_name,
+                'actor_role' => 'klien',
+                'title' => 'Laporan Tiket Didaftarkan',
+                'description' => "Pengaduan tercatat untuk {$ticket5->customer_name}. Gejala: {$ticket5->issue}.",
+                'created_at' => $ticket5->reported_at,
+            ]
+        );
+        TicketLog::updateOrCreate(
+            ['ticket_id' => $ticket5->id, 'action' => 'SPK_DISPATCHED'],
+            [
+                'work_order_id' => $spk5->id,
+                'user_id' => $admin->id,
+                'actor_name' => 'Admin NOC Pusat',
+                'actor_role' => 'admin',
+                'title' => 'SPK Diterbitkan & Tim Teknisi Ditugaskan',
+                'description' => "Admin NOC menerbitkan {$spk5->spk_number} dan menugaskan Tim Teknisi ({$spk5->technician_name}). Status: Penanganan darurat kabel putus tersangkut kendaraan.",
+                'notes' => 'Logistik Diserahkan: 1 Roll Dropcore 1000m, 2 Pcs Fast Connector SC/UPC.',
+                'created_at' => $spk5->dispatched_at,
+            ]
+        );
+        TicketLog::updateOrCreate(
+            ['ticket_id' => $ticket5->id, 'action' => 'TICKET_SOLVED'],
+            [
+                'work_order_id' => $spk5->id,
+                'user_id' => $tech1->id,
+                'actor_name' => "{$tech1->name} (Team Lead)",
+                'actor_role' => 'teknisi',
+                'title' => 'Perbaikan Lapangan Selesai (Solved)',
+                'description' => "Tim Teknisi ({$spk5->technician_name}) telah menyelesaikan perbaikan lapangan pada titik {$ticket5->odp_code}. Seluruh koneksi pelanggan kembali normal.",
+                'notes' => $spk5->tech_notes,
+                'created_at' => $spk5->resolved_at,
             ]
         );
     }

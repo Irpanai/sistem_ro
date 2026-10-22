@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ticket;
+use App\Models\TicketLog;
 use App\Models\TopologyNode;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class ClientPortalController extends Controller
         $user = auth()->user();
 
         // Get tickets for this client or matching name
-        $tickets = Ticket::with('workOrder')
+        $tickets = Ticket::with(['workOrder.technicians', 'ticketLogs'])
             ->where(function ($q) use ($user) {
                 if ($user) {
                     $q->where('user_id', $user->id)
@@ -33,6 +34,30 @@ class ClientPortalController extends Controller
         $allNodes = TopologyNode::all();
 
         return view('klien.portal', compact('tickets', 'activeTicketsCount', 'solvedTicketsCount', 'topologyNodes', 'allNodes'));
+    }
+
+    public function history(): View
+    {
+        $user = auth()->user();
+
+        $tickets = Ticket::with(['workOrder.technicians', 'ticketLogs', 'workOrder.materialsOutbound'])
+            ->where(function ($q) use ($user) {
+                if ($user) {
+                    $q->where('user_id', $user->id)
+                        ->orWhere('customer_name', $user->name);
+                }
+            })
+            ->orWhere('customer_name', 'Haji Sulaiman')
+            ->orderByDesc('created_at')
+            ->get();
+
+        $totalTicketsCount = $tickets->count();
+        $solvedTicketsCount = $tickets->where('status', 'Solved')->count();
+        $activeTicketsCount = $tickets->where('status', '!=', 'Solved')->count();
+
+        $allNodes = TopologyNode::all();
+
+        return view('klien.riwayat', compact('tickets', 'totalTicketsCount', 'solvedTicketsCount', 'activeTicketsCount', 'allNodes'));
     }
 
     public function storeComplaint(Request $request): RedirectResponse
@@ -54,7 +79,7 @@ class ClientPortalController extends Controller
         $odp = TopologyNode::where('name', $validated['odp_code'])->first();
         $isOdpOffline = $odp && $odp->status === 'Offline';
 
-        Ticket::create([
+        $ticket = Ticket::create([
             'ticket_number' => $ticketNumber,
             'user_id' => $user?->id,
             'customer_name' => $user?->name ?? 'Pelanggan',
@@ -66,8 +91,20 @@ class ClientPortalController extends Controller
             'status' => 'Pending',
             'type' => $isOdpOffline ? 'OUTAGE' : 'ISOLIR',
             'priority' => 'High',
-            'analysis_details' => 'Laporan masuk dari Portal Klien. Menunggu analisis NOC.',
+            'analysis_details' => 'Laporan masuk dari Portal Mandiri Klien. Menunggu verifikasi tim NOC.',
             'reported_at' => now(),
+        ]);
+
+        // Record initial TicketLog
+        TicketLog::create([
+            'ticket_id' => $ticket->id,
+            'user_id' => $user?->id,
+            'actor_name' => $ticket->customer_name,
+            'actor_role' => 'klien',
+            'action' => 'TICKET_CREATED',
+            'title' => 'Laporan Dibuat oleh Pelanggan',
+            'description' => "Pelanggan ({$ticket->customer_name}) melaporkan gangguan melalui portal mandiri. Gejala: {$ticket->issue}. Titik ODP: {$ticket->odp_code}.",
+            'notes' => 'Nomor WhatsApp Pelanggan: '.$ticket->customer_phone,
         ]);
 
         return redirect()->route('klien.portal')

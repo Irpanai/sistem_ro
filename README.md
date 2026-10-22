@@ -40,20 +40,32 @@
 - **Polyline Jalur Kabel Transmisi**: Menampilkan bentangan kabel feeder aktif (garis biru solid) dan kabel putus / insiden (garis merah putus-putus).
 - **Rute Langsung Google Maps**: Tombol pintas navigasi GPS *turn-by-turn* langsung menuju titik koordinat tiang ODP saat teknisi bertugas di lapangan.
 
-### 2. 🎟️ Sistem Ticketing & Klasifikasi Gangguan Otomatis
+### 2. 🎟️ Sistem Ticketing & Penugasan Tim Multi-Teknisi Lapangan
 - **Penerimaan Tiket Multi-Kanal**: Mendukung input tiket internal oleh NOC maupun laporan mandiri pelanggan (*Client Portal*).
 - **Klasifikasi Insiden Jaringan**:
   - `OUTAGE` (Gangguan Massal / Kabel Putus / ODP Padam): Prioritas *High*, mewajibkan alokasi logistik perbaikan kabel atau konektor.
   - `ISOLIR` (Gangguan Individual Pelanggan / Tunggakan / Konfigurasi Port): Ditangani dengan verifikasi sinyal redaman.
-- **Penerbitan SPK (Surat Perintah Kerja)**: NOC menugaskan teknisi lapangan yang tersedia (*Available*) disertai estimasi perbaikan dan instruksi khusus.
+- **Penugasan Tim Multi-Teknisi per 1 Tiket**:
+  - Admin NOC dapat menugaskan tim kerja (1, 2, 3, bahkan lebih personil) untuk 1 tiket perbaikan skala besar.
+  - Penunjukan **Koordinator Lapangan (Team Lead)** dan anggota tim teknisi.
+  - Sinkronisasi otomatis status ketersediaan personil menjadi `On Field (Bertugas)` dan kembali `Available (Siaga)` ketika SPK diselesaikan.
 
-### 3. 📦 Logistik Material & Handover Gudang
-- **Master Data Stok**: Monitoring kuantitas Dropcore FO (Roll/Meter), Fast Connector SC/UPC, Protection Sleeve, Modem ONT/ONU GPON, Adaptor, dan Splitter 1:8.
-- **Alokasi Material per SPK**: Saat menerbitkan SPK, NOC dapat mengeluarkan material gudang yang langsung memotong stok secara real-time.
+### 3. 📦 Logistik Material & Tab Serah Terima Khusus Teknisi
+- **Role Isolation & Keamanan Inventaris**: Teknisi hanya memiliki hak akses *read-only* untuk katalog gudang (tidak dapat merestok atau mengubah inventaris seperti admin).
+- **Tab Serah Terima Material Lapangan**: Teknisi dapat melihat daftar material atau logistik apa saja yang diserahkan oleh Admin NOC kepada dirinya/tim per SPK yang ditugaskan.
+- **Alokasi Material per SPK**: Saat menerbitkan SPK, Admin NOC mengeluarkan material gudang (Dropcore FO, Fast Connector, Modem ONT, Protection Sleeve) yang langsung memotong stok secara real-time.
 - **Audit Pengeluaran Logistik**: Riwayat lengkap material keluar yang mencatat kode transaksi, nomor tiket, nomor SPK, teknisi penerima, dan approval NOC.
-- **Ekspor Dokumen**: Cetak laporan ramah printer (PDF) dan ekspor CSV/Excel sekali klik.
 
-### 4. 📱 Tampilan Responsif & Desain Minimalis Modern
+### 4. 📜 Riwayat & Linimasa Penanganan Tiket di Semua Role
+- **Admin NOC**: Meninjau riwayat lengkap (*audit trail*) setiap tiket, kronologi pelaporan, SPK terbit, tim teknisi yang bertugas, hingga catatan teknis OPM.
+- **Teknisi Lapangan**: Tab filter khusus **Tugas Aktif (In Progress)** vs **Riwayat SPK Selesai (Solved)**, disertai modal linimasa penanganan dan rekap material.
+- **Klien / Pelanggan**: Tab filter **Laporan Aktif** vs **Riwayat Selesai**, *3-Step Visual Stepper*, informasi tim teknisi yang ditugaskan, dan linimasa detail perkembangan perbaikan secara transparan.
+
+### 5. 👥 Manajemen Pengguna Terpadu (Admin NOC)
+- **Kelola Seluruh Pengguna**: Admin NOC dapat menambah, mengedit, dan menghapus akun pengguna untuk role **Admin NOC**, **Teknisi Lapangan**, maupun **Pelanggan / Klien**.
+- **Filter Berdasarkan Peran & Wilayah**: Manajemen cepat pengguna berdasarkan regional (Banjarmasin, Barito Kuala) dan status akun aktif.
+
+### 6. 📱 Tampilan Responsif & Desain Minimalis Modern
 - **100% Native Laravel Blade + Tailwind CSS**: Performa cepat tanpa overhead framework SPA yang berat.
 - **Margin Kompak & Rapi**: Tata letak *fluid width* yang presisi di semua resolusi layar (desktop ultrawide, laptop, tablet, hingga smartphone).
 - **Ikon Garis Minimalis (SVG)**: Antarmuka bersih profesional menggunakan SVG line icons terstandarisasi.
@@ -66,7 +78,7 @@
 | Komponen | Spesifikasi / Library | Keterangan |
 | :--- | :--- | :--- |
 | **Framework Backend** | Laravel 12 (PHP 8.3+) | Routing, Eloquent ORM, Middleware, Service Container |
-| **Basis Data** | MySQL 8.0+ | Relasi tabel `users`, `topology_nodes`, `materials`, `tickets`, `work_orders`, `material_outbounds` |
+| **Basis Data** | MySQL 8.0+ | Relasi `users`, `topology_nodes`, `materials`, `tickets`, `work_orders`, `work_order_technicians`, `ticket_logs`, `material_outbounds` |
 | **Frontend Template** | Laravel Blade Engine | Server-Side Rendering (SSR) yang aman, ringan, dan SEO-friendly |
 | **CSS Styling** | Tailwind CSS 3.4 + Vite | Utilitas CSS modern dengan palet warna ISP enterprise |
 | **Pemetaan GIS** | Leaflet.js 1.9.4 | Peta interaktif, marker kustom, layer satelit Esri World Imagery |
@@ -84,28 +96,28 @@ Aplikasi ini dirancang dengan kontrol akses berbasis peran (*Role-Based Access C
 flowchart LR
     A[Pelanggan / Klien] -->|1. Lapor Kendala| B[Sistem SIPKJ / NOC]
     B -->|2. Analisis & Verifikasi ODP| C[Admin NOC]
-    C -->|3. Terbitkan SPK & Alokasi Material| D[Teknisi Lapangan]
-    D -->|4. Navigasi Satelit & Perbaikan Lapangan| E[Simpul ODP Tiang]
+    C -->|3. Terbitkan SPK & Tugaskan Tim Multi-Teknisi| D[Tim Teknisi Lapangan]
+    D -->|4. Cek Material Serah Terima & Navigasi Satelit| E[Simpul ODP Tiang]
     D -->|5. Input Catatan OPM & Tandai Solved| B
-    B -->|6. Status Real-Time Terupdate| A
+    B -->|6. Status & Linimasa Real-Time Terupdate| A
 ```
 
 ### 1. 🛡️ Admin NOC (Network Operations Center)
 - Memantau telemetri seluruh simpul OLT dan ODP di Kalsel.
 - Melakukan diagnosa simpul putus (*Fiber Cut*) melalui live GIS Map.
-- Menganalisis tiket keluhan pelanggan, memilih teknisi yang bertugas, dan mendistribusikan material dari gudang logistik.
+- Menganalisis tiket keluhan pelanggan, menunjuk tim teknisi (bisa multi-personil), dan mendistribusikan material dari gudang logistik.
+- **Manajemen Pengguna**: Menambah dan mengelola kredensial admin, teknisi lapangan, dan akun klien.
 - Mengelola data master topologi dan mencetak rekapitulasi laporan logistik.
 
 ### 2. 🔧 Teknisi Lapangan (Field Engineer)
-- Menerima lembar tugas SPK aktif secara digital.
-- Melihat daftar material yang telah dialokasikan oleh pihak logistik/NOC.
-- Mengakses peta satelit tiang ODP dan menavigasi rute perbaikan lewat Google Maps.
-- Menginput hasil pengukuran daya optik (OPM dBm) dan menandai status tiket menjadi `Solved`.
+- **Menu Tugas SPK Saya (`/teknisi/portal`)**: Menerima lembar tugas SPK aktif secara digital beserta informasi anggota tim, koordinator, dan instruksi NOC.
+- **Menu Riwayat Tiket Selesai (`/teknisi/riwayat`)**: Menu khusus untuk kroscek seluruh tiket yang pernah diselesaikan, rekap total item material terpasang, serta catatan teknis dan hasil ukur OPM dBm.
+- **Menu Cek Logistik (`/logistik`)**: Melihat daftar material dan logistik yang diserahkan oleh Admin NOC pada tab **Material Diserahkan ke Teknisi** (katalog stok bersifat *read-only*).
+- **Menu Data Topologi (`/topologi`)**: Mengakses peta satelit tiang ODP dan menavigasi rute perbaikan lewat Google Maps.
 
 ### 3. 👤 Klien (Pelanggan Mandiri)
-- Memantau status paket internet dan titik sambung distribusi ODP rumah secara transparan.
-- Membuat laporan keluhan jaringan mandiri secara cepat.
-- Memantau proses penanganan gangguan melalui *3-Step Progress Tracker* (`Diterima` ➔ `Ditugaskan` ➔ `Selesai`).
+- **Menu Portal Pelanggan (`/klien/portal`)**: Memantau status paket internet, titik ODP distribusi rumah, membuat pengaduan mandiri, dan memantau status secara *real-time*.
+- **Menu Riwayat Tiket & Keluhan (`/klien/riwayat`)**: Menu khusus histori pengaduan yang mencatat nomor tiket, tanggal lapor, tim teknisi yang bertugas, catatan teknis hasil perbaikan, dan linimasa audit log lengkap.
 
 ---
 
