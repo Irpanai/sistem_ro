@@ -161,7 +161,17 @@
                             <h3 class="font-bold text-slate-900 text-sm sm:text-base mt-2">{{ $ticket->issue }}</h3>
                         </div>
 
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <!-- Button Cetak Bukti Laporan (PDF) -->
+                            <a href="{{ route('klien.tiket.print', $ticket) }}" target="_blank"
+                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all border border-slate-200 shadow-xs"
+                               title="Cetak Tanda Terima & Bukti Pengaduan (PDF)">
+                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                                </svg>
+                                <span>Cetak Bukti (PDF)</span>
+                            </a>
+
                             <!-- Button Riwayat & Linimasa Lengkap -->
                             <button type="button" onclick="openClientTimelineModal({{ htmlspecialchars($ticketJson, ENT_QUOTES, 'UTF-8') }})"
                                     class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition-all border border-indigo-200/60"
@@ -323,12 +333,23 @@
                            class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">ODP / Area Terdekat *</label>
-                    <select name="odp_code" required class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-                        @foreach($topologyNodes as $node)
-                            <option value="{{ $node->name }}">{{ $node->name }} ({{ $node->location }})</option>
-                        @endforeach
-                    </select>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-xs font-semibold text-slate-700">Titik ODP Distribusi</label>
+                        <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/80 inline-flex items-center gap-1">
+                            <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            Otomatis Tertera
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-2.5 px-3 py-2 bg-slate-100/90 border border-slate-200 rounded-xl text-slate-800">
+                        <div class="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="font-mono font-bold text-xs text-slate-900 leading-tight">{{ $clientOdp }}</div>
+                            <div class="text-[11px] text-slate-500 truncate leading-tight">{{ $clientOdpLocation }}</div>
+                        </div>
+                        <input type="hidden" name="odp_code" value="{{ $clientOdp }}">
+                    </div>
                 </div>
             </div>
 

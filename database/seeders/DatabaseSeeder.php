@@ -24,12 +24,12 @@ class DatabaseSeeder extends Seeder
         $admin = User::updateOrCreate(
             ['username' => 'admin_noc'],
             [
-                'name' => 'Admin NOC Pusat',
-                'email' => 'admin.noc@borneofiber.net',
+                'name' => 'Admin Kantor Banjarmasin',
+                'email' => 'admin.bjm@borneofiber.net',
                 'password' => Hash::make('password123'),
                 'role' => 'admin',
                 'phone' => '0812-5541-0001',
-                'area' => 'Kantor NOC Regional Kalsel',
+                'area' => 'Kantor Operasional Banjarmasin',
                 'address' => 'Jl. Ahmad Yani KM 4.5, Banjarmasin',
                 'rating' => 5.0,
                 'technician_status' => 'Available',
@@ -126,18 +126,19 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // 2. Seed Topology Nodes
+        // 2. Seed Topology Nodes per Wilayah Kecamatan di Kota Banjarmasin
         $nodes = [
-            ['node_id' => 'NODE-01', 'name' => 'OLT-BJM-PUSAT', 'type' => 'OLT', 'area' => 'Banjarmasin', 'location' => 'Jl. Ahmad Yani KM 4.5, Banjarmasin', 'coordinates' => '-3.3278, 114.6062', 'total_ports' => 16, 'used_ports' => 14, 'status' => 'Online', 'connected_odp' => 12, 'connected_users' => 120, 'issue' => null],
-            ['node_id' => 'NODE-02', 'name' => 'ODP-BJM-01', 'type' => 'ODP', 'area' => 'Banjarmasin', 'location' => 'Jl. Lambung Mangkurat No. 12', 'coordinates' => '-3.3186, 114.5908', 'total_ports' => 16, 'used_ports' => 14, 'status' => 'Online', 'connected_odp' => null, 'connected_users' => 14, 'issue' => null],
-            ['node_id' => 'NODE-03', 'name' => 'ODP-BJM-02', 'type' => 'ODP', 'area' => 'Banjarmasin', 'location' => 'Jl. Veteran Komp. Merpati', 'coordinates' => '-3.3204, 114.6012', 'total_ports' => 8, 'used_ports' => 8, 'status' => 'Online', 'connected_odp' => null, 'connected_users' => 8, 'issue' => null],
-            ['node_id' => 'NODE-04', 'name' => 'ODP-BJM-03', 'type' => 'ODP', 'area' => 'Banjarmasin', 'location' => 'Jl. Gatot Subroto Gang 5', 'coordinates' => '-3.3325, 114.6191', 'total_ports' => 16, 'used_ports' => 12, 'status' => 'Offline', 'connected_odp' => null, 'connected_users' => 12, 'issue' => 'Fiber Cut Main Feeder'],
-            ['node_id' => 'NODE-05', 'name' => 'ODP-BJM-04', 'type' => 'ODP', 'area' => 'Banjarmasin', 'location' => 'Jl. Sultan Adam Komp. Taekwondo', 'coordinates' => '-3.2988, 114.6022', 'total_ports' => 16, 'used_ports' => 15, 'status' => 'Online', 'connected_odp' => null, 'connected_users' => 15, 'issue' => null],
-            ['node_id' => 'NODE-06', 'name' => 'OLT-BTL-MARABAHAN', 'type' => 'OLT', 'area' => 'Barito Kuala', 'location' => 'Jl. Jenderal Sudirman No. 8, Marabahan', 'coordinates' => '-2.9961, 114.7705', 'total_ports' => 8, 'used_ports' => 6, 'status' => 'Online', 'connected_odp' => 8, 'connected_users' => 60, 'issue' => null],
-            ['node_id' => 'NODE-07', 'name' => 'ODP-BTL-01', 'type' => 'ODP', 'area' => 'Barito Kuala', 'location' => 'Jl. Trans Kalimantan, Alalak Berangas', 'coordinates' => '-3.2671, 114.5772', 'total_ports' => 16, 'used_ports' => 11, 'status' => 'Online', 'connected_odp' => null, 'connected_users' => 11, 'issue' => null],
-            ['node_id' => 'NODE-08', 'name' => 'ODP-BTL-02', 'type' => 'ODP', 'area' => 'Barito Kuala', 'location' => 'Handil Bakti Komp. Semangat Dalam', 'coordinates' => '-3.2755, 114.6133', 'total_ports' => 16, 'used_ports' => 16, 'status' => 'Online', 'connected_odp' => null, 'connected_users' => 16, 'issue' => null],
-            ['node_id' => 'NODE-09', 'name' => 'ODP-BTL-03', 'type' => 'ODP', 'area' => 'Barito Kuala', 'location' => 'Jl. Raya Marabahan Simpang 4', 'coordinates' => '-3.0112, 114.7554', 'total_ports' => 8, 'used_ports' => 7, 'status' => 'Offline', 'connected_odp' => null, 'connected_users' => 7, 'issue' => 'Power Loss Adaptor Rusak'],
-            ['node_id' => 'NODE-10', 'name' => 'ODP-BTL-04', 'type' => 'ODP', 'area' => 'Barito Kuala', 'location' => 'Jl. Trans Kalimantan KM 12 Anjir Muara', 'coordinates' => '-3.1954, 114.5122', 'total_ports' => 8, 'used_ports' => 5, 'status' => 'Online', 'connected_odp' => null, 'connected_users' => 5, 'issue' => null],
+            ['node_id' => 'NODE-01', 'name' => 'OLT-BJM-KANTOR', 'type' => 'OLT', 'area' => 'Banjarmasin Tengah', 'location' => 'Kantor Operasional Banjarmasin - Jl. Ahmad Yani KM 4.5', 'coordinates' => '-3.3278, 114.6062', 'total_ports' => 16, 'used_ports' => 14, 'status' => 'Online', 'connected_odp' => 10, 'connected_users' => 140, 'issue' => null],
+            ['node_id' => 'NODE-02', 'name' => 'ODP-BJM-01', 'type' => 'ODP', 'area' => 'Banjarmasin Tengah', 'location' => 'Jl. Lambung Mangkurat No. 12', 'coordinates' => '-3.3186, 114.5908', 'total_ports' => 16, 'used_ports' => 14, 'status' => 'Online', 'connected_odp' => null, 'connected_users' => 14, 'issue' => null],
+            ['node_id' => 'NODE-03', 'name' => 'ODP-BJM-02', 'type' => 'ODP', 'area' => 'Banjarmasin Timur', 'location' => 'Jl. Veteran Komp. Merpati', 'coordinates' => '-3.3204, 114.6012', 'total_ports' => 8, 'used_ports' => 8, 'status' => 'Online', 'connected_odp' => null, 'connected_users' => 8, 'issue' => null],
+            ['node_id' => 'NODE-04', 'name' => 'ODP-BJM-03', 'type' => 'ODP', 'area' => 'Banjarmasin Timur', 'location' => 'Jl. Gatot Subroto Gang 5', 'coordinates' => '-3.3325, 114.6191', 'total_ports' => 16, 'used_ports' => 12, 'status' => 'Offline', 'connected_odp' => null, 'connected_users' => 12, 'issue' => 'Fiber Cut Main Feeder'],
+            ['node_id' => 'NODE-05', 'name' => 'ODP-BJM-04', 'type' => 'ODP', 'area' => 'Banjarmasin Utara', 'location' => 'Jl. Sultan Adam Komp. Taekwondo', 'coordinates' => '-3.2988, 114.6022', 'total_ports' => 16, 'used_ports' => 15, 'status' => 'Online', 'connected_odp' => null, 'connected_users' => 15, 'issue' => null],
+            ['node_id' => 'NODE-06', 'name' => 'ODP-BJM-05', 'type' => 'ODP', 'area' => 'Banjarmasin Barat', 'location' => 'Jl. Soetoyo S. Teluk Dalam No. 88', 'coordinates' => '-3.3211, 114.5772', 'total_ports' => 16, 'used_ports' => 11, 'status' => 'Online', 'connected_odp' => null, 'connected_users' => 11, 'issue' => null],
+            ['node_id' => 'NODE-07', 'name' => 'ODP-BJM-06', 'type' => 'ODP', 'area' => 'Banjarmasin Selatan', 'location' => 'Jl. Pangeran Antasari No. 45', 'coordinates' => '-3.3382, 114.5985', 'total_ports' => 16, 'used_ports' => 13, 'status' => 'Online', 'connected_odp' => null, 'connected_users' => 13, 'issue' => null],
+            ['node_id' => 'NODE-08', 'name' => 'ODP-BJM-07', 'type' => 'ODP', 'area' => 'Banjarmasin Utara', 'location' => 'Jl. Brigjend H. Hasan Basry Kayutangi', 'coordinates' => '-3.2925, 114.5886', 'total_ports' => 16, 'used_ports' => 14, 'status' => 'Online', 'connected_odp' => null, 'connected_users' => 14, 'issue' => null],
+            ['node_id' => 'NODE-09', 'name' => 'ODP-BJM-08', 'type' => 'ODP', 'area' => 'Banjarmasin Barat', 'location' => 'Jl. Kuin Selatan Simpang Belitung', 'coordinates' => '-3.3082, 114.5715', 'total_ports' => 8, 'used_ports' => 7, 'status' => 'Offline', 'connected_odp' => null, 'connected_users' => 7, 'issue' => 'Power Loss Adaptor Rusak'],
+            ['node_id' => 'NODE-10', 'name' => 'ODP-BJM-09', 'type' => 'ODP', 'area' => 'Banjarmasin Selatan', 'location' => 'Jl. Kelayan B Barat Komp. Ar-Raudhah', 'coordinates' => '-3.3451, 114.6022', 'total_ports' => 8, 'used_ports' => 6, 'status' => 'Online', 'connected_odp' => null, 'connected_users' => 6, 'issue' => null],
+            ['node_id' => 'NODE-11', 'name' => 'ODP-BJM-10', 'type' => 'ODP', 'area' => 'Banjarmasin Tengah', 'location' => 'Jl. Pangeran Samudra Kertak Baru', 'coordinates' => '-3.3245, 114.5945', 'total_ports' => 16, 'used_ports' => 10, 'status' => 'Online', 'connected_odp' => null, 'connected_users' => 10, 'issue' => null],
         ];
 
         foreach ($nodes as $nodeData) {
@@ -336,7 +337,7 @@ class DatabaseSeeder extends Seeder
                 'material_name' => 'Kabel Dropcore 1 Core (1000m)',
                 'quantity' => 1,
                 'unit' => 'Roll',
-                'approved_by' => 'Admin NOC Pusat',
+                'approved_by' => 'Admin Kantor Banjarmasin',
                 'status' => 'Used & Completed',
             ]
         );
@@ -354,7 +355,7 @@ class DatabaseSeeder extends Seeder
                 'material_name' => 'Fast Connector SC/UPC Biru',
                 'quantity' => 2,
                 'unit' => 'Pcs',
-                'approved_by' => 'Admin NOC Pusat',
+                'approved_by' => 'Admin Kantor Banjarmasin',
                 'status' => 'Used & Completed',
             ]
         );
@@ -372,7 +373,7 @@ class DatabaseSeeder extends Seeder
                 'material_name' => 'Fast Connector SC/UPC Biru',
                 'quantity' => 2,
                 'unit' => 'Pcs',
-                'approved_by' => 'Admin NOC Pusat',
+                'approved_by' => 'Admin Kantor Banjarmasin',
                 'status' => 'In Field Handover',
             ]
         );
@@ -390,7 +391,7 @@ class DatabaseSeeder extends Seeder
                 'material_name' => 'Modem ONU GPON ZTE F609',
                 'quantity' => 1,
                 'unit' => 'Unit',
-                'approved_by' => 'Admin NOC Pusat',
+                'approved_by' => 'Admin Kantor Banjarmasin',
                 'status' => 'In Field Handover',
             ]
         );
@@ -428,7 +429,7 @@ class DatabaseSeeder extends Seeder
             [
                 'work_order_id' => $spk2->id,
                 'user_id' => $admin->id,
-                'actor_name' => 'Admin NOC Pusat',
+                'actor_name' => 'Admin Kantor Banjarmasin',
                 'actor_role' => 'admin',
                 'title' => 'SPK Diterbitkan & Tim Teknisi Ditugaskan',
                 'description' => "Admin NOC menerbitkan {$spk2->spk_number} dan menugaskan Tim Teknisi ({$spk2->technician_name}). Status tim: Sedang bertugas melakukan perbaikan lapangan pada {$ticket2->odp_code} ({$ticket2->address}).",
@@ -466,7 +467,7 @@ class DatabaseSeeder extends Seeder
             [
                 'work_order_id' => $spk4->id,
                 'user_id' => $admin->id,
-                'actor_name' => 'Admin NOC Pusat',
+                'actor_name' => 'Admin Kantor Banjarmasin',
                 'actor_role' => 'admin',
                 'title' => 'SPK Diterbitkan & Teknisi Ditugaskan',
                 'description' => "Admin NOC menerbitkan {$spk4->spk_number} dan menugaskan Teknisi ({$spk4->technician_name}). Status: Menuju lokasi pelanggan untuk penggantian unit modem ONT GPON.",
@@ -491,7 +492,7 @@ class DatabaseSeeder extends Seeder
             [
                 'work_order_id' => $spk5->id,
                 'user_id' => $admin->id,
-                'actor_name' => 'Admin NOC Pusat',
+                'actor_name' => 'Admin Kantor Banjarmasin',
                 'actor_role' => 'admin',
                 'title' => 'SPK Diterbitkan & Tim Teknisi Ditugaskan',
                 'description' => "Admin NOC menerbitkan {$spk5->spk_number} dan menugaskan Tim Teknisi ({$spk5->technician_name}). Status: Penanganan darurat kabel putus tersangkut kendaraan.",

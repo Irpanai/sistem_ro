@@ -44,7 +44,7 @@
         </span>
         <span class="inline-flex items-center gap-1.5 text-[10px] font-bold px-2 py-0.5 rounded-md {{ $role === 'admin' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : ($role === 'teknisi' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20') }}">
             <span class="w-1.5 h-1.5 rounded-full {{ $role === 'admin' ? 'bg-blue-400' : ($role === 'teknisi' ? 'bg-emerald-400' : 'bg-amber-400') }}"></span>
-            {{ $role === 'admin' ? 'Admin NOC' : ($role === 'teknisi' ? 'Teknisi' : 'Klien') }}
+            {{ $role === 'admin' ? 'Admin Kantor (Banjarmasin)' : ($role === 'teknisi' ? 'Teknisi' : 'Klien') }}
         </span>
     </div>
 
@@ -83,7 +83,7 @@
                 </div>
                 <div class="flex-1 min-w-0">
                     <div class="text-xs truncate">Data Topologi</div>
-                    <div class="text-[10px] truncate {{ request()->routeIs('topologi.*') ? 'text-blue-100' : 'text-slate-400' }}">Master OLT &amp; ODP</div>
+                    <div class="text-[10px] truncate {{ request()->routeIs('topologi.*') ? 'text-blue-100' : 'text-slate-400' }}">Per Wilayah Kecamatan</div>
                 </div>
             </a>
 
@@ -188,16 +188,16 @@
                 </div>
             </a>
 
-            <!-- 4. Cek Logistik -->
-            <a href="{{ route('logistik.index') }}" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all {{ request()->routeIs('logistik.*') ? 'bg-blue-600 text-white font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium' }}">
-                <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-slate-400">
+            <!-- 4. Riwayat Material -->
+            <a href="{{ route('logistik.index') }}" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all {{ request()->routeIs('logistik.*') ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20 font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-800/60 font-medium' }}">
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 {{ request()->routeIs('logistik.*') ? 'text-white' : 'text-slate-400' }}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                     </svg>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <div class="text-xs truncate">Cek Logistik</div>
-                    <div class="text-[10px] truncate text-slate-400">Material Serah Terima</div>
+                    <div class="text-xs truncate">Riwayat Material</div>
+                    <div class="text-[10px] truncate {{ request()->routeIs('logistik.*') ? 'text-emerald-100' : 'text-slate-400' }}">Material Pernah Diterima</div>
                 </div>
             </a>
         @else
@@ -249,7 +249,7 @@
             </div>
 
             <div class="text-[10px] text-slate-400 flex justify-between">
-                <span>Banjarmasin &amp; BTL</span>
+                <span>Kota Banjarmasin</span>
                 <span>{{ $totalTopologyCount > 0 ? round(($onlineTopologyCount / $totalTopologyCount) * 100) : 0 }}% Online</span>
             </div>
         </div>

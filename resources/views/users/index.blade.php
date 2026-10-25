@@ -9,7 +9,7 @@
                 <span>Manajemen Pengguna (User Management)</span>
             </h1>
             <p class="text-xs sm:text-sm text-slate-500 mt-1">
-                Kelola hak akses akun Admin NOC, tim Teknisi Lapangan, dan portal mandiri Klien / Pelanggan.
+                Kelola hak akses akun Admin Kantor (Banjarmasin), tim Teknisi Lapangan, dan portal mandiri Klien / Pelanggan.
             </p>
         </div>
 
@@ -39,9 +39,9 @@
 
         <div class="bg-white p-5 rounded-2xl border border-blue-200/90 shadow-xs flex items-center justify-between">
             <div>
-                <p class="text-xs font-semibold text-blue-600 uppercase tracking-wider">Admin NOC</p>
+                <p class="text-xs font-semibold text-blue-600 uppercase tracking-wider">Admin Kantor</p>
                 <h3 class="text-2xl font-extrabold text-blue-700 mt-1 font-mono">{{ $adminCount }} <span class="text-xs font-normal text-slate-500 font-sans">Petugas</span></h3>
-                <p class="text-[11px] text-blue-500 font-medium mt-1">Otoritas kendali jaringan</p>
+                <p class="text-[11px] text-blue-500 font-medium mt-1">Admin Kantor Banjarmasin</p>
             </div>
             <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
@@ -94,7 +94,7 @@
                 <select name="role" onchange="this.form.submit()"
                         class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all">
                     <option value="Semua">Semua Peran (Role)</option>
-                    <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin NOC</option>
+                    <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin Kantor (Banjarmasin)</option>
                     <option value="teknisi" {{ request('role') === 'teknisi' ? 'selected' : '' }}>Teknisi Lapangan</option>
                     <option value="klien" {{ request('role') === 'klien' ? 'selected' : '' }}>Klien / Pelanggan</option>
                 </select>
@@ -145,7 +145,7 @@
                                 'klien' => 'bg-amber-50 text-amber-800 border-amber-200',
                             };
                             $roleLabel = match($user->role) {
-                                'admin' => 'Admin NOC',
+                                'admin' => 'Admin Kantor (Banjarmasin)',
                                 'teknisi' => 'Teknisi Lapangan',
                                 'klien' => 'Klien / Pelanggan',
                             };
@@ -202,8 +202,16 @@
 
                             <td class="py-3.5 px-4 sm:px-6 text-right">
                                 <div class="inline-flex items-center gap-1.5">
+                                    <a href="{{ route('users.print', $user) }}" target="_blank"
+                                       class="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-slate-200"
+                                       title="Cetak Lembar Registrasi Akun & Pakta Akses (PDF)">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                                        </svg>
+                                    </a>
+
                                     <button onclick="openEditModal({{ json_encode($user) }})"
-                                            class="p-1.5 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                            class="p-1.5 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-slate-200"
                                             title="Edit Pengguna">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
@@ -214,7 +222,7 @@
                                         <form method="POST" action="{{ route('users.destroy', $user) }}" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user {{ $user->name }}? Tindakan ini tidak dapat dibatalkan.');" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Hapus Pengguna">
+                                            <button type="submit" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border border-slate-200" title="Hapus Pengguna">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                 </svg>
@@ -249,7 +257,7 @@
         <div class="flex items-center justify-between border-b border-slate-100 pb-4">
             <div>
                 <h3 class="font-bold text-slate-900 text-base">Tambah Pengguna Baru</h3>
-                <p class="text-xs text-slate-500 mt-0.5">Daftarkan akun Admin NOC, Teknisi Lapangan, atau Klien.</p>
+                <p class="text-xs text-slate-500 mt-0.5">Daftarkan akun Admin Kantor, Teknisi Lapangan, atau Klien.</p>
             </div>
             <button onclick="document.getElementById('modalAddUser').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
         </div>
@@ -282,7 +290,7 @@
                             class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20">
                         <option value="klien">Klien / Pelanggan Mandiri</option>
                         <option value="teknisi" selected>Teknisi Lapangan</option>
-                        <option value="admin">Admin NOC</option>
+                        <option value="admin">Admin Kantor (Banjarmasin)</option>
                     </select>
                 </div>
                 <div>
@@ -374,7 +382,7 @@
                             class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20">
                         <option value="klien">Klien / Pelanggan Mandiri</option>
                         <option value="teknisi">Teknisi Lapangan</option>
-                        <option value="admin">Admin NOC</option>
+                        <option value="admin">Admin Kantor (Banjarmasin)</option>
                     </select>
                 </div>
                 <div>

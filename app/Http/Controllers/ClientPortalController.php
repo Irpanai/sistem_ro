@@ -33,7 +33,20 @@ class ClientPortalController extends Controller
         $topologyNodes = TopologyNode::where('status', 'Online')->orderBy('name')->get();
         $allNodes = TopologyNode::all();
 
-        return view('klien.portal', compact('tickets', 'activeTicketsCount', 'solvedTicketsCount', 'topologyNodes', 'allNodes'));
+        $latestTicketOdp = $tickets->first()?->odp_code;
+        $clientOdpNode = null;
+        if ($latestTicketOdp) {
+            $clientOdpNode = TopologyNode::where('name', $latestTicketOdp)->first();
+        }
+        if (! $clientOdpNode) {
+            $clientOdpNode = TopologyNode::where('type', 'ODP')->where('area', 'like', '%Banjarmasin%')->first()
+                ?? TopologyNode::where('type', 'ODP')->first();
+        }
+
+        $clientOdp = $clientOdpNode?->name ?? 'ODP-BJM-03';
+        $clientOdpLocation = $clientOdpNode?->location ?? 'Jl. Gatot Subroto Gang 5, Banjarmasin';
+
+        return view('klien.portal', compact('tickets', 'activeTicketsCount', 'solvedTicketsCount', 'topologyNodes', 'allNodes', 'clientOdp', 'clientOdpLocation'));
     }
 
     public function history(): View
@@ -109,5 +122,10 @@ class ClientPortalController extends Controller
 
         return redirect()->route('klien.portal')
             ->with('success', "Keluhan Anda berhasil dikirim dengan Nomor Tiket: {$ticketNumber}. Tim NOC sedang menganalisis jaringan Anda.");
+    }
+
+    public function printReceipt(Ticket $ticket): View
+    {
+        return view('klien.print', compact('ticket'));
     }
 }

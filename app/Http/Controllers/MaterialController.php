@@ -68,7 +68,7 @@ class MaterialController extends Controller
     public function store(Request $request): RedirectResponse
     {
         if (auth()->user()?->role !== 'admin') {
-            return back()->with('warning', 'Hanya Admin NOC yang memiliki otoritas untuk mendaftarkan SKU material baru ke gudang.');
+            return back()->with('warning', 'Hanya Admin Kantor (Banjarmasin) yang memiliki otoritas untuk mendaftarkan SKU material baru ke gudang.');
         }
 
         $validated = $request->validate([
@@ -91,7 +91,7 @@ class MaterialController extends Controller
     public function restock(Request $request, Material $material): RedirectResponse
     {
         if (auth()->user()?->role !== 'admin') {
-            return back()->with('warning', 'Hanya Admin NOC yang memiliki otoritas untuk menambah stok logistik.');
+            return back()->with('warning', 'Hanya Admin Kantor (Banjarmasin) yang memiliki otoritas untuk menambah stok logistik.');
         }
 
         $request->validate([
@@ -103,5 +103,15 @@ class MaterialController extends Controller
 
         return redirect()->route('logistik.index')
             ->with('success', "Stok {$material->name} bertambah +{$added} {$material->unit} (Total: {$material->stock}).");
+    }
+
+    public function printOutbound(MaterialOutbound $outbound): View
+    {
+        return view('logistik.print_outbound', compact('outbound'));
+    }
+
+    public function printMaterial(Material $material): View
+    {
+        return view('logistik.print_material', compact('material'));
     }
 }

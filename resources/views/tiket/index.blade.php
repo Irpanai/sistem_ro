@@ -147,13 +147,22 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="inline-flex items-center gap-1.5">
+                                    <a href="{{ route('tiket.print', $ticket) }}" target="_blank"
+                                       class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition-colors border border-slate-200/80"
+                                       title="Cetak Dokumen SPK & Berita Acara (PDF)">
+                                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                                        </svg>
+                                        <span>Cetak SPK</span>
+                                    </a>
+
                                     <button onclick="openTimelineModal({{ json_encode($ticket) }})"
                                             class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition-colors"
                                             title="Lihat Riwayat & Log Aktivitas">
                                         <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                         </svg>
-                                        <span>Riwayat &amp; Log</span>
+                                        <span>Riwayat</span>
                                     </button>
 
                                     @if($ticket->status === 'Pending')
@@ -467,7 +476,16 @@
                     Riwayat Perjalanan &amp; Log Detail Tiket
                 </h3>
             </div>
-            <button onclick="document.getElementById('modalTimeline').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+            <div class="flex items-center gap-2">
+                <a id="btnTlPrintSpk" href="#" target="_blank"
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                    </svg>
+                    <span>Cetak Dokumen (PDF)</span>
+                </a>
+                <button onclick="document.getElementById('modalTimeline').classList.add('hidden')" class="p-1.5 text-slate-400 hover:text-slate-600 text-lg">✕</button>
+            </div>
         </div>
 
         <!-- Scrollable Content -->
@@ -640,6 +658,7 @@ function openTimelineModal(ticket) {
     document.getElementById('tlAddress').innerText = ticket.address + ', ' + ticket.area;
     document.getElementById('tlOdp').innerText = ticket.odp_code;
     document.getElementById('tlIssue').innerText = ticket.issue;
+    document.getElementById('btnTlPrintSpk').href = '/tiket/' + ticket.id + '/print';
 
     // Team Card
     const teamCard = document.getElementById('tlTeamCard');

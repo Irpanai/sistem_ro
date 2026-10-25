@@ -135,7 +135,17 @@
                         <h3 class="font-bold text-slate-900 text-sm sm:text-base mt-2">{{ $ticket->issue }}</h3>
                     </div>
 
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <!-- Button Cetak Bukti Laporan (PDF) -->
+                        <a href="{{ route('klien.tiket.print', $ticket) }}" target="_blank"
+                           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all border border-slate-200 shadow-xs"
+                           title="Cetak Tanda Terima & Bukti Pengaduan (PDF)">
+                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                            </svg>
+                            <span>Cetak Bukti (PDF)</span>
+                        </a>
+
                         <!-- Button Linimasa Detail -->
                         <button type="button" onclick="openClientTimelineModal({{ htmlspecialchars($ticketJson, ENT_QUOTES, 'UTF-8') }})"
                                 class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition-all border border-indigo-200/60"

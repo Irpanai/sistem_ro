@@ -41,29 +41,29 @@
 - **Rute Langsung Google Maps**: Tombol pintas navigasi GPS *turn-by-turn* langsung menuju titik koordinat tiang ODP saat teknisi bertugas di lapangan.
 
 ### 2. 🎟️ Sistem Ticketing & Penugasan Tim Multi-Teknisi Lapangan
-- **Penerimaan Tiket Multi-Kanal**: Mendukung input tiket internal oleh NOC maupun laporan mandiri pelanggan (*Client Portal*).
+- **Penerimaan Tiket Multi-Kanal**: Mendukung input tiket internal oleh Admin Kantor maupun laporan mandiri pelanggan (*Client Portal*).
+- **Titik ODP Otomatis Tertera**: Pada portal pelanggan, titik ODP terhubung otomatis tertera sesuai data registrasi pelanggan tanpa perlu memilih manual.
 - **Klasifikasi Insiden Jaringan**:
   - `OUTAGE` (Gangguan Massal / Kabel Putus / ODP Padam): Prioritas *High*, mewajibkan alokasi logistik perbaikan kabel atau konektor.
   - `ISOLIR` (Gangguan Individual Pelanggan / Tunggakan / Konfigurasi Port): Ditangani dengan verifikasi sinyal redaman.
 - **Penugasan Tim Multi-Teknisi per 1 Tiket**:
-  - Admin NOC dapat menugaskan tim kerja (1, 2, 3, bahkan lebih personil) untuk 1 tiket perbaikan skala besar.
+  - Admin Kantor dapat menugaskan tim kerja (1, 2, 3, bahkan lebih personil) untuk 1 tiket perbaikan skala besar.
   - Penunjukan **Koordinator Lapangan (Team Lead)** dan anggota tim teknisi.
   - Sinkronisasi otomatis status ketersediaan personil menjadi `On Field (Bertugas)` dan kembali `Available (Siaga)` ketika SPK diselesaikan.
 
-### 3. 📦 Logistik Material & Tab Serah Terima Khusus Teknisi
-- **Role Isolation & Keamanan Inventaris**: Teknisi hanya memiliki hak akses *read-only* untuk katalog gudang (tidak dapat merestok atau mengubah inventaris seperti admin).
-- **Tab Serah Terima Material Lapangan**: Teknisi dapat melihat daftar material atau logistik apa saja yang diserahkan oleh Admin NOC kepada dirinya/tim per SPK yang ditugaskan.
-- **Alokasi Material per SPK**: Saat menerbitkan SPK, Admin NOC mengeluarkan material gudang (Dropcore FO, Fast Connector, Modem ONT, Protection Sleeve) yang langsung memotong stok secara real-time.
-- **Audit Pengeluaran Logistik**: Riwayat lengkap material keluar yang mencatat kode transaksi, nomor tiket, nomor SPK, teknisi penerima, dan approval NOC.
+### 3. 📦 Riwayat Material Teknisi & Inventaris Gudang Admin
+- **Riwayat Material Diterima (Teknisi Lapangan)**: Teknisi lapangan memiliki menu khusus **Riwayat Material** yang hanya menampilkan daftar material suku cadang yang pernah diserahkan oleh Admin Kantor kepada dirinya/tim per SPK yang ditugaskan.
+- **Alokasi Material per SPK**: Saat menerbitkan SPK, Admin Kantor mengeluarkan material gudang (Dropcore FO, Fast Connector, Modem ONT, Protection Sleeve) yang langsung memotong stok secara real-time.
+- **Audit Stok Opname Fisik Gudang & Filter Bulanan**: Modul Laporan dilengkapi filter pengeluaran bulanan/tahunan serta lembar rekonsiliasi Stok Opname fisik gudang untuk membandingkan stok fisik riil dengan catatan sistem.
 
 ### 4. 📜 Riwayat & Linimasa Penanganan Tiket di Semua Role
-- **Admin NOC**: Meninjau riwayat lengkap (*audit trail*) setiap tiket, kronologi pelaporan, SPK terbit, tim teknisi yang bertugas, hingga catatan teknis OPM.
+- **Admin Kantor (Banjarmasin)**: Meninjau riwayat lengkap (*audit trail*) setiap tiket, kronologi pelaporan, SPK terbit, tim teknisi yang bertugas, hingga catatan teknis OPM.
 - **Teknisi Lapangan**: Tab filter khusus **Tugas Aktif (In Progress)** vs **Riwayat SPK Selesai (Solved)**, disertai modal linimasa penanganan dan rekap material.
 - **Klien / Pelanggan**: Tab filter **Laporan Aktif** vs **Riwayat Selesai**, *3-Step Visual Stepper*, informasi tim teknisi yang ditugaskan, dan linimasa detail perkembangan perbaikan secara transparan.
 
-### 5. 👥 Manajemen Pengguna Terpadu (Admin NOC)
-- **Kelola Seluruh Pengguna**: Admin NOC dapat menambah, mengedit, dan menghapus akun pengguna untuk role **Admin NOC**, **Teknisi Lapangan**, maupun **Pelanggan / Klien**.
-- **Filter Berdasarkan Peran & Wilayah**: Manajemen cepat pengguna berdasarkan regional (Banjarmasin, Barito Kuala) dan status akun aktif.
+### 5. 👥 Manajemen Pengguna Terpadu (Admin Kantor)
+- **Kelola Seluruh Pengguna**: Admin Kantor dapat menambah, mengedit, dan menghapus akun pengguna untuk role **Admin Kantor (Banjarmasin)**, **Teknisi Lapangan**, maupun **Pelanggan / Klien**.
+- **Filter Berdasarkan Peran & Wilayah**: Manajemen cepat pengguna berdasarkan kecamatan Kota Banjarmasin dan status akun aktif.
 
 ### 6. 📱 Tampilan Responsif & Desain Minimalis Modern
 - **100% Native Laravel Blade + Tailwind CSS**: Performa cepat tanpa overhead framework SPA yang berat.
@@ -102,21 +102,22 @@ flowchart LR
     B -->|6. Status & Linimasa Real-Time Terupdate| A
 ```
 
-### 1. 🛡️ Admin NOC (Network Operations Center)
-- Memantau telemetri seluruh simpul OLT dan ODP di Kalsel.
+### 1. 🛡️ Admin Kantor (Banjarmasin)
+- Memantau telemetri seluruh simpul ODP distribusi di 5 Kecamatan Kota Banjarmasin (list OLT dihilangkan dari dashboard agar fokus pada jaringan distribusi).
 - Melakukan diagnosa simpul putus (*Fiber Cut*) melalui live GIS Map.
-- Menganalisis tiket keluhan pelanggan, menunjuk tim teknisi (bisa multi-personil), dan mendistribusikan material dari gudang logistik.
-- **Manajemen Pengguna**: Menambah dan mengelola kredensial admin, teknisi lapangan, dan akun klien.
-- Mengelola data master topologi dan mencetak rekapitulasi laporan logistik.
+- Menganalisis tiket keluhan pelanggan, menunjuk tim teknisi (multi-personil), dan mendistribusikan material dari gudang logistik.
+- **Manajemen Pengguna**: Menambah dan mengelola kredensial Admin Kantor, teknisi lapangan, dan akun klien.
+- **Topologi per Kecamatan**: Mengelola data master simpul ODP per wilayah kecamatan (Utara, Timur, Barat, Selatan, Tengah).
+- **Laporan & Stok Opname**: Menyaring rekapitulasi pengeluaran material bulanan/tahunan dan mengaudit lembar rekonsiliasi stok opname fisik gudang.
 
 ### 2. 🔧 Teknisi Lapangan (Field Engineer)
-- **Menu Tugas SPK Saya (`/teknisi/portal`)**: Menerima lembar tugas SPK aktif secara digital beserta informasi anggota tim, koordinator, dan instruksi NOC.
+- **Menu Tugas SPK Saya (`/teknisi/portal`)**: Menerima lembar tugas SPK aktif secara digital beserta informasi anggota tim, koordinator, dan instruksi penanganan.
 - **Menu Riwayat Tiket Selesai (`/teknisi/riwayat`)**: Menu khusus untuk kroscek seluruh tiket yang pernah diselesaikan, rekap total item material terpasang, serta catatan teknis dan hasil ukur OPM dBm.
-- **Menu Cek Logistik (`/logistik`)**: Melihat daftar material dan logistik yang diserahkan oleh Admin NOC pada tab **Material Diserahkan ke Teknisi** (katalog stok bersifat *read-only*).
-- **Menu Data Topologi (`/topologi`)**: Mengakses peta satelit tiang ODP dan menavigasi rute perbaikan lewat Google Maps.
+- **Menu Riwayat Material (`/logistik`)**: Hanya menampilkan riwayat material yang pernah diterima dari Admin Kantor untuk perbaikan SPK di lapangan (tanpa katalog inventaris gudang admin).
+- **Menu Data Topologi (`/topologi`)**: Mengakses pemetaan satelit tiang ODP per kecamatan dan navigasi rute Google Maps.
 
 ### 3. 👤 Klien (Pelanggan Mandiri)
-- **Menu Portal Pelanggan (`/klien/portal`)**: Memantau status paket internet, titik ODP distribusi rumah, membuat pengaduan mandiri, dan memantau status secara *real-time*.
+- **Menu Portal Pelanggan (`/klien/portal`)**: Memantau status paket internet, membuat pengaduan mandiri dengan titik ODP otomatis tertera dari sistem (tanpa perlu memilih manual ODP), dan memantau status secara *real-time*.
 - **Menu Riwayat Tiket & Keluhan (`/klien/riwayat`)**: Menu khusus histori pengaduan yang mencatat nomor tiket, tanggal lapor, tim teknisi yang bertugas, catatan teknis hasil perbaikan, dan linimasa audit log lengkap.
 
 ---
@@ -151,11 +152,11 @@ Aplikasi telah dilengkapi seeder akun untuk mempermudah pengujian:
 
 | Role | Username | Password | Deskripsi / Penugasan |
 | :--- | :--- | :--- | :--- |
-| **Admin NOC** | `admin_noc` | `password123` | Akses penuh dashboard, topologi, tiket, logistik, & laporan |
+| **Admin Kantor** | `admin_noc` | `password123` | Admin Kantor Operasional Banjarmasin (Akses Penuh) |
 | **Teknisi Lapangan** | `teknisi_rizky` | `password123` | Teknisi Wilayah Banjarmasin (Rizky Ramadhan) |
-| **Teknisi Lapangan** | `teknisi_noor` | `password123` | Teknisi Wilayah Barito Kuala (Noor Hidayat) |
+| **Teknisi Lapangan** | `teknisi_noor` | `password123` | Teknisi Wilayah Banjarmasin (Muhammad Noor) |
 | **Klien / Pelanggan** | `klien_sulaiman` | `password123` | Pelanggan Area Kayutangi (Haji Sulaiman) |
-| **Klien / Pelanggan** | `klien_rahmah` | `password123` | Pelanggan Area Handil Bakti (Siti Rahmah) |
+| **Klien / Pelanggan** | `klien_rahmah` | `password123` | Pelanggan Area Banjarmasin (Siti Rahmah) |
 
 > 💡 **Fitur Switch Role Cepat**: Pada bagian kanan header atas (Top Header), tersedia tombol cepat untuk berganti role secara instan tanpa perlu logout-login berulang kali.
 

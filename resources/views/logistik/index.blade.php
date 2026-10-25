@@ -13,11 +13,11 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
-                <span>Logistik Material &amp; Inventaris Gudang</span>
+                <span>{{ $isTeknisi ? 'Riwayat Material yang Pernah Diterima' : 'Logistik Material & Inventaris Gudang' }}</span>
             </h1>
             <p class="text-xs sm:text-sm text-slate-500 mt-1">
                 @if($isTeknisi)
-                    Daftar material perbaikan yang diserahkan Admin NOC kepada Anda serta katalog ketersediaan stok sparepart gudang.
+                    Histori seluruh material suku cadang, kabel dropcore, connector, dan modem ONT yang pernah diserahkan oleh Admin Kantor kepada Anda untuk perbaikan SPK di lapangan.
                 @else
                     Monitoring persediaan material serat optik, perangkat modem OLT/ONT, dan audit pengeluaran spare part teknisi.
                 @endif
@@ -36,7 +36,7 @@
             @else
                 <span class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-semibold">
                     <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    Mode Teknisi: Akses Material Diserahkan &amp; Cek Gudang
+                    Riwayat Material Diterima Teknisi (SPK)
                 </span>
             @endif
         </div>
@@ -44,69 +44,119 @@
 
     <!-- Summary KPI Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
-        <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex items-center justify-between">
-            <div>
-                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    {{ $isTeknisi ? 'Material Diserahkan ke Anda' : 'Total SKU Gudang' }}
-                </p>
-                <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1 font-mono">
-                    {{ $isTeknisi ? $assignedOutbounds->count() : $totalSkus }}
-                    <span class="text-xs font-normal text-slate-500 font-sans">{{ $isTeknisi ? 'Alokasi SPK' : 'Jenis Barang' }}</span>
-                </h3>
-                <p class="text-xs text-slate-400 mt-1">{{ $isTeknisi ? 'Log serah terima dari Admin NOC' : 'Tersedia di Gudang Banjarmasin' }}</p>
+        @if($isTeknisi)
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Material Diterima</p>
+                    <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1 font-mono">
+                        {{ $assignedOutbounds->count() }}
+                        <span class="text-xs font-normal text-slate-500 font-sans">Alokasi SPK</span>
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">Material Diserahkan ke Teknisi oleh Admin Kantor</p>
+                </div>
+                <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                </div>
             </div>
-            <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+
+            <div class="bg-white p-6 rounded-2xl border border-blue-200/90 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-blue-600 uppercase tracking-wider">Total Item &amp; Suku Cadang</p>
+                    <h3 class="text-2xl sm:text-3xl font-extrabold text-blue-700 mt-1 font-mono">
+                        {{ $assignedOutbounds->sum('quantity') }}
+                        <span class="text-xs font-normal text-slate-500 font-sans">Unit / Roll / Pcs</span>
+                    </h3>
+                    <p class="text-xs text-blue-500 font-medium mt-1">Total material yang pernah diterima</p>
+                </div>
+                <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-emerald-200/90 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Status Pemakaian Lapangan</p>
+                    <h3 class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1 font-mono">
+                        {{ $assignedOutbounds->where('status', 'Used & Completed')->count() }}
+                        <span class="text-xs font-normal text-slate-500 font-sans">Selesai Terpasang</span>
+                    </h3>
+                    <p class="text-xs text-emerald-600 font-medium mt-1">SPK berhasil diperbaiki</p>
+                </div>
+                <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+            </div>
+        @else
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total SKU Gudang</p>
+                    <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1 font-mono">
+                        {{ $totalSkus }}
+                        <span class="text-xs font-normal text-slate-500 font-sans">Jenis Barang</span>
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">Tersedia di Gudang Kantor Banjarmasin</p>
+                </div>
+                <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-rose-200/90 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-rose-600 uppercase tracking-wider">Stok Menipis / Kritis</p>
+                    <h3 class="text-2xl sm:text-3xl font-extrabold text-rose-600 mt-1 font-mono">{{ $lowStockCount }} <span class="text-xs font-normal text-slate-500 font-sans">Perlu Restock</span></h3>
+                    <p class="text-xs text-rose-500 font-medium mt-1">Di bawah batas buffer minimum</p>
+                </div>
+                <div class="w-10 h-10 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-emerald-200/90 shadow-xs flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Stok Aman &amp; Optimal</p>
+                    <h3 class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1 font-mono">{{ $healthyStockCount }} <span class="text-xs font-normal text-slate-500 font-sans">Material Aman</span></h3>
+                    <p class="text-xs text-emerald-600 font-medium mt-1">Siap dialokasikan untuk penanganan SPK</p>
+                </div>
+                <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+            </div>
+        @endif
+    </div>
+
+    @if(! $isTeknisi)
+        <!-- TAB SWITCHER: Serah Terima vs Katalog Stok (Hanya Tampil untuk Admin) -->
+        <div class="flex items-center gap-2 border-b border-slate-200 pb-1">
+            <button onclick="switchTab('handover')" id="btnTabHandover"
+                    class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 {{ $defaultTab === 'handover' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                </svg>
+                <span>Material Diserahkan ke Teknisi ({{ $assignedOutbounds->count() }})</span>
+            </button>
+
+            <button onclick="switchTab('inventory')" id="btnTabInventory"
+                    class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 {{ $defaultTab === 'inventory' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                 </svg>
-            </div>
+                <span>Katalog Stok Gudang ({{ $materials->count() }})</span>
+            </button>
         </div>
-
-        <div class="bg-white p-6 rounded-2xl border border-rose-200/90 shadow-xs flex items-center justify-between">
-            <div>
-                <p class="text-xs font-semibold text-rose-600 uppercase tracking-wider">Stok Menipis / Kritis</p>
-                <h3 class="text-2xl sm:text-3xl font-extrabold text-rose-600 mt-1 font-mono">{{ $lowStockCount }} <span class="text-xs font-normal text-slate-500 font-sans">Perlu Restock</span></h3>
-                <p class="text-xs text-rose-500 font-medium mt-1">Di bawah batas buffer minimum</p>
-            </div>
-            <div class="w-10 h-10 bg-rose-50 text-rose-600 rounded-xl flex items-center justify-center">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                </svg>
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-2xl border border-emerald-200/90 shadow-xs flex items-center justify-between">
-            <div>
-                <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Stok Aman &amp; Optimal</p>
-                <h3 class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1 font-mono">{{ $healthyStockCount }} <span class="text-xs font-normal text-slate-500 font-sans">Material Aman</span></h3>
-                <p class="text-xs text-emerald-600 font-medium mt-1">Siap dialokasikan untuk penanganan SPK</p>
-            </div>
-            <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-            </div>
-        </div>
-    </div>
-
-    <!-- TAB SWITCHER: Serah Terima vs Katalog Stok -->
-    <div class="flex items-center gap-2 border-b border-slate-200 pb-1">
-        <button onclick="switchTab('handover')" id="btnTabHandover"
-                class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 {{ $defaultTab === 'handover' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
-            </svg>
-            <span>Material Diserahkan ke Teknisi ({{ $assignedOutbounds->count() }})</span>
-        </button>
-
-        <button onclick="switchTab('inventory')" id="btnTabInventory"
-                class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 {{ $defaultTab === 'inventory' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-            </svg>
-            <span>Katalog Stok Gudang {{ $isTeknisi ? '(Read-Only)' : '' }} ({{ $materials->count() }})</span>
-        </button>
-    </div>
+    @endif
 
     <!-- SECTION 1: MATERIAL DISERAHKAN KE TEKNISI -->
     <div id="sectionHandover" class="{{ $defaultTab === 'handover' ? '' : 'hidden' }} space-y-4">
@@ -119,10 +169,10 @@
                 </div>
                 <div>
                     <h3 class="text-xs sm:text-sm font-bold text-slate-900">
-                        {{ $isTeknisi ? 'Daftar Material yang Diserahkan Admin NOC Kepada Anda / Tim' : 'Audit Pengeluaran & Serah Terima Material ke Teknisi Lapangan' }}
+                        {{ $isTeknisi ? 'Riwayat Material yang Pernah Diterima (Diserahkan oleh Admin Kantor Banjarmasin)' : 'Audit Pengeluaran & Serah Terima Material ke Teknisi Lapangan' }}
                     </h3>
                     <p class="text-[11px] text-slate-500">
-                        Dicatat otomatis setiap kali Admin NOC menyetujui pengeluaran material saat menerbitkan Surat Perintah Kerja (SPK).
+                        {{ $isTeknisi ? 'Catatan resmi seluruh material diserahkan ke teknisi oleh Admin Kantor Banjarmasin saat penerbitan SPK penanganan gangguan.' : 'Dicatat otomatis setiap kali Admin Kantor Banjarmasin menyetujui pengeluaran material saat menerbitkan Surat Perintah Kerja (SPK).' }}
                     </p>
                 </div>
             </div>
@@ -143,6 +193,7 @@
                             <th class="py-3.5 px-4">Teknisi Penerima</th>
                             <th class="py-3.5 px-4">Disetujui Oleh</th>
                             <th class="py-3.5 px-4 text-center">Status</th>
+                            <th class="py-3.5 px-4 sm:px-6 text-right">Aksi Dokumen</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-xs">
@@ -191,10 +242,21 @@
                                         {{ $out->status }}
                                     </span>
                                 </td>
+
+                                <td class="py-3.5 px-4 sm:px-6 text-right">
+                                    <a href="{{ route('logistik.outbound.print', $out) }}" target="_blank"
+                                       class="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-semibold transition-colors border border-slate-200 shadow-xs"
+                                       title="Cetak Surat Bukti Serah Terima Material (PDF)">
+                                        <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                                        </svg>
+                                        <span>Cetak SPMB</span>
+                                    </a>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="py-12 text-center text-slate-400">
+                                <td colspan="8" class="py-12 text-center text-slate-400">
                                     Belum ada catatan material yang diserahkan.
                                 </td>
                             </tr>
@@ -205,7 +267,8 @@
         </div>
     </div>
 
-    <!-- SECTION 2: KATALOG STOK GUDANG -->
+    @if(! $isTeknisi)
+    <!-- SECTION 2: KATALOG STOK GUDANG (Hanya untuk Admin Kantor) -->
     <div id="sectionInventory" class="{{ $defaultTab === 'inventory' ? '' : 'hidden' }} space-y-4">
         <!-- Filter and Search -->
         <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs">
@@ -301,19 +364,26 @@
                                     {{ $material->location ?? 'Gudang Pusat' }}
                                 </td>
                                 <td class="py-3.5 px-4 sm:px-6 text-right">
-                                    @if($isAdmin)
-                                        <button onclick="openRestockModal('{{ $material->id }}', '{{ addslashes($material->name) }}', '{{ $material->stock }}', '{{ $material->unit }}')"
-                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-xs font-semibold transition-colors">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                                    <div class="inline-flex items-center gap-1.5">
+                                        <a href="{{ route('logistik.material.print', $material) }}" target="_blank"
+                                           class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition-colors border border-slate-200 shadow-xs"
+                                           title="Cetak Kartu SKU Material (PDF)">
+                                            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                                             </svg>
-                                            Restock
-                                        </button>
-                                    @else
-                                        <span class="text-[11px] font-semibold text-slate-400 bg-slate-50 px-2 py-1 rounded border border-slate-200">
-                                            Tersedia di Gudang
-                                        </span>
-                                    @endif
+                                            <span>Kartu SKU</span>
+                                        </a>
+
+                                        @if($isAdmin)
+                                            <button onclick="openRestockModal('{{ $material->id }}', '{{ addslashes($material->name) }}', '{{ $material->stock }}', '{{ $material->unit }}')"
+                                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-xs font-semibold transition-colors">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                                                </svg>
+                                                Restock
+                                            </button>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -328,6 +398,7 @@
             </div>
         </div>
     </div>
+    @endif
 </div>
 
 @if($isAdmin)

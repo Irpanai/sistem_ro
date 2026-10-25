@@ -73,7 +73,7 @@ class UserController extends Controller
         User::create($validated);
 
         $roleLabel = match ($validated['role']) {
-            'admin' => 'Admin NOC',
+            'admin' => 'Admin Kantor (Banjarmasin)',
             'teknisi' => 'Teknisi Lapangan',
             'klien' => 'Klien Pelanggan',
         };
@@ -119,5 +119,10 @@ class UserController extends Controller
 
         return redirect()->route('users.index')
             ->with('success', "Pengguna [{$name}] berhasil dihapus dari sistem.");
+    }
+
+    public function printDocument(User $user): View
+    {
+        return view('users.print', compact('user'));
     }
 }

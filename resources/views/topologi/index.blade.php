@@ -9,19 +9,19 @@
                 <span>Master Data Topologi &amp; Pemetaan GIS Fiber Optic</span>
             </h1>
             <p class="text-xs sm:text-sm text-slate-500 mt-1">
-                Visualisasi geografis citra satelit simpul OLT, distribusi ODP, dan rute kabel transmisi di Kalimantan Selatan.
+                Visualisasi geografis citra satelit simpul transmisi fiber optic per wilayah kecamatan di Kota Banjarmasin.
             </p>
         </div>
 
-        <div class="flex items-center gap-2.5">
-            <button onclick="zoomArea('bjm')" class="px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-semibold shadow-xs transition-all">
-                Fokus Banjarmasin
-            </button>
-            <button onclick="zoomArea('btl')" class="px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-semibold shadow-xs transition-all">
-                Fokus Barito Kuala
-            </button>
-            <button onclick="document.getElementById('addNodeCard').classList.toggle('hidden')" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-sm shadow-blue-500/20 transition-all hover:scale-[1.01]">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="text-xs font-semibold text-slate-500 mr-1 hidden sm:inline">Pilih Kecamatan:</span>
+            @foreach($kecamatanList as $kec)
+                <button type="button" onclick="zoomArea('{{ $kec }}')" class="px-2.5 py-1.5 bg-white border border-slate-200 hover:border-blue-500 hover:text-blue-600 text-slate-700 rounded-xl text-xs font-medium shadow-2xs transition-all">
+                    {{ str_replace('Banjarmasin ', '', $kec) }}
+                </button>
+            @endforeach
+            <button onclick="document.getElementById('addNodeCard').classList.toggle('hidden')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl shadow-xs shadow-blue-500/20 transition-all hover:scale-[1.01]">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
                 </svg>
                 <span>Tambah Node</span>
@@ -106,12 +106,12 @@
 
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1.5">
-                        Wilayah / Area
+                        Wilayah Kecamatan di Banjarmasin <span class="text-rose-500">*</span>
                     </label>
-                    <select name="area" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-                        <option value="Banjarmasin">Banjarmasin</option>
-                        <option value="Barito Kuala">Barito Kuala</option>
-                        <option value="Banjarbaru">Banjarbaru</option>
+                    <select name="area" required class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                        @foreach($kecamatanList as $kec)
+                            <option value="{{ $kec }}">{{ $kec }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -190,9 +190,10 @@
                 </div>
 
                 <select name="area" onchange="this.form.submit()" class="text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-                    <option value="Semua">Semua Area</option>
-                    <option value="Banjarmasin" {{ request('area') === 'Banjarmasin' ? 'selected' : '' }}>Banjarmasin</option>
-                    <option value="Barito Kuala" {{ request('area') === 'Barito Kuala' ? 'selected' : '' }}>Barito Kuala</option>
+                    <option value="Semua">Semua Kecamatan (5)</option>
+                    @foreach($kecamatanList as $kec)
+                        <option value="{{ $kec }}" {{ request('area') === $kec ? 'selected' : '' }}>{{ $kec }}</option>
+                    @endforeach
                 </select>
 
                 <select name="type" onchange="this.form.submit()" class="text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20">
@@ -265,6 +266,15 @@
 
                             <td class="py-4 px-6 text-right">
                                 <div class="inline-flex items-center gap-2">
+                                    <!-- Print PDF Document Button -->
+                                    <a href="{{ route('topologi.print', $node) }}" target="_blank"
+                                       class="p-1 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-colors border border-slate-200"
+                                       title="Cetak Berita Acara & Sertifikat Simpul (PDF)">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                                        </svg>
+                                    </a>
+
                                     <!-- Toggle Status Button -->
                                     <form action="{{ route('topologi.toggle', $node) }}" method="POST" class="inline">
                                         @csrf
@@ -465,11 +475,19 @@
         }
     }
 
-    function zoomArea(area) {
-        if (area === 'bjm') {
-            map.flyTo([-3.32, 114.60], 13, { duration: 1 });
-        } else if (area === 'btl') {
-            map.flyTo([-3.10, 114.65], 11, { duration: 1 });
+    const kecamatanCoords = {
+        'Banjarmasin Utara': [-3.295, 114.595],
+        'Banjarmasin Timur': [-3.325, 114.615],
+        'Banjarmasin Barat': [-3.315, 114.575],
+        'Banjarmasin Selatan': [-3.342, 114.600],
+        'Banjarmasin Tengah': [-3.322, 114.592]
+    };
+
+    function zoomArea(kec) {
+        if (kecamatanCoords[kec]) {
+            map.flyTo(kecamatanCoords[kec], 14, { duration: 1.2 });
+        } else {
+            map.flyTo([-3.32, 114.60], 13, { duration: 1.2 });
         }
     }
 </script>

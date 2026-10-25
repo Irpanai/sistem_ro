@@ -202,4 +202,11 @@ class TicketController extends Controller
         return redirect()->route('tiket.index')
             ->with('success', "Surat Perintah Kerja (SPK) berhasil diterbitkan dan ditugaskan ke Tim Teknisi ({$allTechNames}).");
     }
+
+    public function printDocument(Ticket $ticket): View
+    {
+        $ticket->load(['workOrder.technicians', 'workOrder.materialsOutbound', 'user', 'ticketLogs']);
+
+        return view('tiket.print', compact('ticket'));
+    }
 }

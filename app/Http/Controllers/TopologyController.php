@@ -32,8 +32,15 @@ class TopologyController extends Controller
 
         $nodes = $query->orderBy('name')->paginate(15)->withQueryString();
         $allNodes = TopologyNode::all();
+        $kecamatanList = [
+            'Banjarmasin Utara',
+            'Banjarmasin Timur',
+            'Banjarmasin Barat',
+            'Banjarmasin Selatan',
+            'Banjarmasin Tengah',
+        ];
 
-        return view('topologi.index', compact('nodes', 'allNodes'));
+        return view('topologi.index', compact('nodes', 'allNodes', 'kecamatanList'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -77,5 +84,10 @@ class TopologyController extends Controller
 
         return redirect()->route('topologi.index')
             ->with('warning', "Node {$name} telah dihapus dari topologi.");
+    }
+
+    public function printDocument(TopologyNode $topologyNode): View
+    {
+        return view('topologi.print', ['node' => $topologyNode]);
     }
 }

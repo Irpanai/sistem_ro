@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'NOC Dashboard'])
+@extends('layouts.app', ['title' => 'Dashboard Admin Kantor Banjarmasin'])
 
 @section('content')
 <div class="space-y-6">
@@ -6,10 +6,10 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
-                <span>Network Operations Center (NOC) Dashboard</span>
+                <span>Dashboard Admin Kantor (Banjarmasin)</span>
             </h1>
             <p class="text-xs sm:text-sm text-slate-500 mt-1">
-                Real-time monitoring keluhan jaringan, status transmisi OLT/ODP, dan penugasan teknisi lapangan.
+                Monitoring terpadu keluhan jaringan, status transmisi titik ODP distribusi, dan penugasan tim teknisi lapangan Kota Banjarmasin.
             </p>
         </div>
 
@@ -169,7 +169,7 @@
                     </h3>
                 </div>
                 <p class="text-xs text-slate-500 mt-1">
-                    Live telemetry simpul transmisi fiber optic wilayah Banjarmasin dan Barito Kuala (BTL).
+                    Live telemetry simpul distribusi ODP fiber optic wilayah Kota Banjarmasin.
                 </p>
             </div>
 
@@ -182,9 +182,6 @@
                     <button type="submit" name="area" value="Banjarmasin" class="px-3 py-1 rounded-lg text-xs font-medium transition-all {{ request('area') === 'Banjarmasin' ? 'bg-white text-slate-900 shadow-xs font-semibold' : 'text-slate-600 hover:text-slate-900' }}">
                         Banjarmasin
                     </button>
-                    <button type="submit" name="area" value="Barito Kuala" class="px-3 py-1 rounded-lg text-xs font-medium transition-all {{ request('area') === 'Barito Kuala' ? 'bg-white text-slate-900 shadow-xs font-semibold' : 'text-slate-600 hover:text-slate-900' }}">
-                        Barito Kuala
-                    </button>
                 </div>
 
                 <select name="status" onchange="this.form.submit()" class="text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
@@ -195,12 +192,12 @@
             </form>
         </div>
 
-        <!-- GIS Satellite Map for NOC -->
+        <!-- GIS Satellite Map for Admin Kantor -->
         <div class="rounded-xl border border-slate-200/90 overflow-hidden relative shadow-inner">
             <div class="absolute top-3 left-12 z-20 bg-slate-900/80 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-xs flex items-center gap-2 border border-slate-700">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span class="font-bold">Live GIS Telemetri</span>
-                <span class="text-slate-400">| Layer Satelit Citra Udara Kalsel</span>
+                <span class="font-bold">Live GIS Telemetri ODP</span>
+                <span class="text-slate-400">| Layer Satelit Citra Udara Banjarmasin</span>
             </div>
             <div id="dashboardGisMap" class="w-full h-80 bg-slate-900"></div>
         </div>
@@ -209,7 +206,7 @@
         <div>
             <div class="flex items-center justify-between mb-3">
                 <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Status Node Perangkat Lapangan ({{ $topologyNodes->count() }} Simpul Terpantau)
+                    Status Titik ODP Distribusi Lapangan ({{ $topologyNodes->count() }} ODP Terpantau)
                 </h4>
                 <span class="text-[11px] text-slate-400">Klik kartu untuk menyorot posisi di peta</span>
             </div>
@@ -332,24 +329,26 @@
             </div>
         </div>
 
-        <!-- Right: Technician Performance Table -->
+        <!-- Right: Team SLA Performance Table (Khusus Team, bukan perorangan) -->
         <div class="lg:col-span-7 bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between">
             <div>
                 <div class="flex items-center justify-between mb-1">
                     <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                        </svg>
+                        <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                        </div>
                         <h3 class="font-bold text-slate-900 text-sm tracking-tight">
-                            Technician Performance &amp; SLA
+                            SLA Tim Lapangan &amp; Performa Regu
                         </h3>
                     </div>
-                    <span class="text-[11px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
-                        Tim Lapangan
+                    <span class="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
+                        SLA Khusus Regu / Tim
                     </span>
                 </div>
                 <p class="text-xs text-slate-500">
-                    Daftar produktivitas penyelesaian tiket per teknisi lapangan regional Kalsel.
+                    Pemantauan target durasi penanganan (SLA) dan kepatuhan waktu kerja per regu tim teknisi lapangan (bukan perorangan).
                 </p>
             </div>
 
@@ -357,57 +356,83 @@
                 <table class="w-full text-left text-xs">
                     <thead>
                         <tr class="border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
-                            <th class="pb-3 pl-2">Nama Teknisi</th>
+                            <th class="pb-3 pl-2">Regu / Tim &amp; Personil</th>
                             <th class="pb-3">Wilayah Tugas</th>
-                            <th class="pb-3 text-center">Status</th>
-                            <th class="pb-3 text-center">Tiket Selesai</th>
-                            <th class="pb-3 text-right pr-2">Rating</th>
+                            <th class="pb-3 text-center">Target vs Respon</th>
+                            <th class="pb-3 text-center">Kepatuhan SLA</th>
+                            <th class="pb-3 text-center">SPK Tuntas</th>
+                            <th class="pb-3 text-right pr-2">Status &amp; Rating</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700">
-                        @foreach($technicians as $index => $tech)
+                        @foreach($teamsPerformance as $team)
                             <tr class="hover:bg-slate-50/80 transition-colors">
                                 <td class="py-3 pl-2">
-                                    <div class="flex items-center gap-2.5">
-                                        <div class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 font-bold flex items-center justify-center text-[11px] border border-slate-200 font-mono">
-                                            {{ $index + 1 }}
+                                    <div class="flex items-start gap-2.5">
+                                        <div class="w-8 h-8 rounded-lg bg-blue-600/10 text-blue-700 font-bold flex items-center justify-center text-[10px] border border-blue-200 font-mono shrink-0 mt-0.5">
+                                            {{ substr($team['code'], -3) }}
                                         </div>
                                         <div>
-                                            <div class="font-bold text-slate-900">{{ $tech->name }}</div>
-                                            <div class="text-[10px] text-slate-400 font-mono">{{ $tech->username }}</div>
+                                            <div class="flex items-center gap-1.5">
+                                                <span class="font-bold text-slate-900">{{ $team['name'] }}</span>
+                                                <span class="text-[10px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 font-mono">{{ $team['code'] }}</span>
+                                            </div>
+                                            <div class="text-[11px] text-blue-600 font-medium">{{ $team['specialty'] }}</div>
+                                            <div class="text-[10px] text-slate-400 mt-0.5">
+                                                <strong class="text-slate-600">Lead:</strong> {{ $team['lead'] }} | <span class="text-slate-500">{{ implode(', ', $team['members']) }}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
 
                                 <td class="py-3 text-slate-600">
-                                    <span class="inline-flex items-center gap-1">
-                                        <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <span class="inline-flex items-center gap-1 text-[11px]">
+                                        <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                         </svg>
-                                        {{ $tech->area }}
+                                        {{ $team['coverage'] }}
                                     </span>
                                 </td>
 
                                 <td class="py-3 text-center">
-                                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $tech->technician_status === 'Available' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-blue-50 text-blue-700 border border-blue-200' }}">
-                                        <span class="w-1.5 h-1.5 rounded-full {{ $tech->technician_status === 'Available' ? 'bg-emerald-500' : 'bg-blue-500' }}"></span>
-                                        {{ $tech->technician_status }}
-                                    </span>
+                                    <div class="font-mono font-bold text-slate-800 text-[11px]">
+                                        {{ $team['avg_hours'] }} Jam
+                                    </div>
+                                    <div class="text-[10px] text-emerald-600 font-medium">
+                                        Target &lt; {{ $team['target_hours'] }} Jam
+                                    </div>
+                                </td>
+
+                                <td class="py-3 text-center">
+                                    <div class="flex flex-col items-center">
+                                        <span class="text-[11px] font-bold text-emerald-700 font-mono">
+                                            {{ $team['sla_compliance'] }}%
+                                        </span>
+                                        <div class="w-16 bg-slate-100 rounded-full h-1.5 mt-1 overflow-hidden">
+                                            <div class="bg-emerald-500 h-1.5 rounded-full" style="width: {{ $team['sla_compliance'] }}%"></div>
+                                        </div>
+                                    </div>
                                 </td>
 
                                 <td class="py-3 text-center font-bold text-slate-900 font-mono">
                                     <span class="px-2 py-1 rounded-lg bg-slate-100 font-semibold text-slate-800 text-[11px]">
-                                        {{ $tech->solved_count + ($tech->username === 'teknisi_rizky' ? 28 : ($tech->username === 'teknisi_noor' ? 19 : 15)) }} Solved
+                                        {{ $team['solved_tickets'] }} SPK
                                     </span>
                                 </td>
 
-                                <td class="py-3 text-right pr-2 font-semibold text-amber-600">
-                                    <span class="inline-flex items-center gap-1">
-                                        <svg class="w-3 h-3 text-amber-500 fill-amber-500" viewBox="0 0 20 20">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                        </svg>
-                                        {{ $tech->rating }}
-                                    </span>
+                                <td class="py-3 text-right pr-2">
+                                    <div class="flex flex-col items-end">
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold {{ $team['status_color'] === 'emerald' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-blue-50 text-blue-700 border border-blue-200' }}">
+                                            <span class="w-1.5 h-1.5 rounded-full {{ $team['status_color'] === 'emerald' ? 'bg-emerald-500' : 'bg-blue-500' }}"></span>
+                                            {{ $team['status'] }}
+                                        </span>
+                                        <span class="inline-flex items-center gap-1 text-[11px] font-bold text-amber-600 mt-1">
+                                            <svg class="w-3 h-3 text-amber-500 fill-amber-500" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                            </svg>
+                                            {{ $team['rating'] }}
+                                        </span>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
@@ -416,8 +441,8 @@
             </div>
 
             <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                <span>Teknisi siap diterjunkan untuk dispatch Work Order (SPK) baru.</span>
-                <span class="font-semibold text-slate-700">Total: {{ $technicians->count() }} Petugas</span>
+                <span>Standar Service Level Agreement (SLA) dihitung terpadu per regu lapangan.</span>
+                <span class="font-semibold text-slate-700">Total: {{ $teamsPerformance->count() }} Regu Operasional</span>
             </div>
         </div>
     </div>
@@ -478,8 +503,8 @@
         });
 
         dashboardMap = L.map('dashboardGisMap', {
-            center: [-3.25, 114.62],
-            zoom: 11,
+            center: [-3.32, 114.60],
+            zoom: 13,
             layers: [satelliteHybrid]
         });
 
