@@ -17,6 +17,7 @@ class TicketLog extends Model
         'title',
         'description',
         'notes',
+        'attachment',
     ];
 
     public function ticket(): BelongsTo

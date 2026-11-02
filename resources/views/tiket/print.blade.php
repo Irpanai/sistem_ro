@@ -178,6 +178,36 @@
         </div>
     </div>
 
+    <!-- Section F: Dokumentasi Visual Bukti Pengerjaan / Penyebab Gangguan Lapangan -->
+    <div class="mb-8">
+        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider bg-slate-100 px-3 py-1.5 rounded-md border-l-4 border-blue-600 mb-2.5">
+            F. Dokumentasi Visual Bukti Pengerjaan / Penyebab Gangguan Lapangan
+        </h3>
+        @if($ticket->workOrder && $ticket->workOrder->evidence_photo)
+            <div class="p-3 border border-slate-200 bg-slate-50/50 rounded-lg text-xs space-y-2">
+                <div class="flex items-start gap-4">
+                    <img src="{{ asset('storage/' . $ticket->workOrder->evidence_photo) }}"
+                         alt="Foto Bukti Lapangan"
+                         class="max-h-48 max-w-xs object-cover rounded-md border border-slate-300 shadow-xs">
+                    <div class="space-y-1.5 text-slate-700">
+                        <span class="text-[10px] uppercase font-bold text-slate-500 block">Keterangan Catatan Teknisi:</span>
+                        <p class="font-mono text-slate-900 bg-white p-2.5 rounded border border-slate-200 leading-relaxed text-xs">
+                            {{ $ticket->workOrder->tech_notes ?: 'Pekerjaan perbaikan selesai dilaksanakan sesuai standar operasional.' }}
+                        </p>
+                        <p class="text-[10px] text-slate-500">
+                            Waktu Penyelesaian: <strong>{{ $ticket->workOrder->resolved_at ? $ticket->workOrder->resolved_at->format('d/m/Y H:i') : '-' }} WITA</strong> &bull;
+                            Pelaksana: <strong>{{ $ticket->workOrder->technician_name }}</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        @else
+            <div class="p-3 border border-dashed border-slate-300 bg-slate-50 rounded-lg text-slate-500 text-xs italic text-center">
+                Dokumentasi foto fisik lapangan akan dilampirkan oleh tim teknisi saat pelaporan penyelesaian SPK.
+            </div>
+        @endif
+    </div>
+
     <!-- Signature Sign-off Block (3 Kolom) -->
     <div class="grid grid-cols-3 gap-4 text-center text-xs pt-4 border-t border-slate-200">
         <div>

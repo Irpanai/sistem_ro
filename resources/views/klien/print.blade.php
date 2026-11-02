@@ -84,7 +84,42 @@
         </div>
     </div>
 
-    <!-- Section C: Ketentuan Standar Layanan SLA -->
+    <!-- Section C: Hasil Perbaikan & Bukti Foto Lapangan (Jika Selesai) -->
+    @if($ticket->workOrder && ($ticket->workOrder->evidence_photo || $ticket->workOrder->tech_notes))
+        <div class="mb-5">
+            <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider bg-slate-100 px-3 py-1.5 rounded-md border-l-4 border-emerald-600 mb-2.5">
+                C. Hasil Perbaikan &amp; Bukti Foto Lapangan
+            </h3>
+            <div class="bg-emerald-50/50 rounded-lg p-3.5 border border-emerald-200 text-xs space-y-2.5">
+                @if($ticket->workOrder->tech_notes)
+                    <div>
+                        <span class="font-bold text-emerald-950 block mb-1">Catatan Teknisi:</span>
+                        <p class="font-mono text-emerald-900 bg-white p-2.5 rounded border border-emerald-200">
+                            {{ $ticket->workOrder->tech_notes }}
+                        </p>
+                    </div>
+                @endif
+                @if($ticket->workOrder->evidence_photo)
+                    <div class="flex items-start gap-4 pt-2 border-t border-emerald-200/80">
+                        <img src="{{ asset('storage/' . $ticket->workOrder->evidence_photo) }}"
+                             alt="Bukti Foto Pengerjaan"
+                             class="max-h-40 max-w-xs object-cover rounded-md border border-emerald-300 shadow-xs">
+                        <div class="text-[11px] text-emerald-900 space-y-1">
+                            <span class="font-bold block">Dokumentasi Fisik Lapangan Terverifikasi</span>
+                            <p class="text-slate-600 leading-relaxed">
+                                Foto kondisi fisik kabel / ODP / redaman sinyal yang diunggah oleh tim teknisi ({{ $ticket->workOrder->technician_name }}) saat penyelesaian SPK.
+                            </p>
+                            <span class="text-[10px] text-slate-500 font-mono block">
+                                Selesai: {{ $ticket->workOrder->resolved_at ? $ticket->workOrder->resolved_at->format('d/m/Y H:i') : '-' }} WITA
+                            </span>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+    @endif
+
+    <!-- Section D: Ketentuan Standar Layanan SLA -->
     <div class="mb-8 p-3 rounded-lg border border-blue-200 bg-blue-50/60 text-xs text-blue-900 space-y-1.5">
         <div class="font-bold flex items-center gap-1.5 text-blue-950">
             <svg class="w-4 h-4 text-blue-700 shrink-0" fill="currentColor" viewBox="0 0 20 20">

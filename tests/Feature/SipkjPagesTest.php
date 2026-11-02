@@ -7,6 +7,9 @@ use App\Models\MaterialOutbound;
 use App\Models\Ticket;
 use App\Models\TopologyNode;
 use App\Models\User;
+use App\Models\WorkOrder;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class SipkjPagesTest extends TestCase
@@ -287,6 +290,103 @@ class SipkjPagesTest extends TestCase
             $laporanOpnameRes = $this->get('/laporan/print?tab=stok_opname');
             $laporanOpnameRes->assertStatus(200);
             $laporanOpnameRes->assertSee('BERITA ACARA AUDIT REKONSILIASI STOK OPNAME FISIK GUDANG');
+        }
+    }
+
+    public function test_technician_can_upload_evidence_photo_when_resolving_spk_and_client_and_admin_can_view_it(): void
+    {
+        Storage::fake('public');
+
+        $tech = User::where('role', 'teknisi')->first();
+        $admin = User::where('role', 'admin')->first();
+        $client = User::where('role', 'klien')->first();
+
+        // Create dedicated In Progress ticket & work order
+        $testTime = time();
+        $ticket = Ticket::create([
+            'ticket_number' => 'TKT-TEST-'.$testTime,
+            'user_id' => $client?->id,
+            'customer_name' => $client?->name ?? 'Haji Sulaiman',
+            'customer_phone' => '08123456789',
+            'address' => 'Jl. Pengujian Bukti Lapangan No. 12',
+            'area' => 'Banjarmasin',
+            'odp_code' => 'ODP-BJM-01',
+            'issue' => 'Kabel FO putus terkena dahan pohon',
+            'status' => 'In Progress',
+            'type' => 'ISOLIR',
+            'priority' => 'High',
+            'reported_at' => now(),
+        ]);
+
+        $workOrder = WorkOrder::create([
+            'ticket_id' => $ticket->id,
+            'spk_number' => 'SPK-TEST-'.$testTime,
+            'technician_id' => $tech?->id,
+            'technician_name' => $tech?->name ?? 'Rizky Ramadhan',
+            'status' => 'In Progress',
+            'dispatched_at' => now(),
+        ]);
+
+        // 1. Technician resolves SPK and uploads evidence photo
+        $this->actingAs($tech ?? User::first());
+        $fakePhoto = UploadedFile::fake()->image('bukti_redaman_opm.jpg', 800, 600);
+
+        $resolveRes = $this->post("/spk/{$workOrder->id}/resolve", [
+            'tech_notes' => 'Kabel dropcore berhasil disambung ulang. Redaman OPM -18.5 dBm normal stabil.',
+            'evidence_photo' => $fakePhoto,
+        ]);
+
+        $resolveRes->assertRedirect();
+
+        // Verify database and storage
+        $workOrder->refresh();
+        $this->assertEquals('Solved', $workOrder->status);
+        $this->assertNotNull($workOrder->evidence_photo);
+        Storage::disk('public')->assertExists($workOrder->evidence_photo);
+
+        $this->assertDatabaseHas('ticket_logs', [
+            'work_order_id' => $workOrder->id,
+            'action' => 'TICKET_SOLVED',
+            'attachment' => $workOrder->evidence_photo,
+        ]);
+
+        // 2. Technician can view photo in portal & riwayat
+        $techPortalRes = $this->get('/teknisi/portal');
+        $techPortalRes->assertStatus(200);
+        $techPortalRes->assertSee($workOrder->evidence_photo);
+
+        $techHistoryRes = $this->get('/teknisi/riwayat');
+        $techHistoryRes->assertStatus(200);
+        $techHistoryRes->assertSee($workOrder->evidence_photo);
+
+        // 3. Admin can view photo in ticket list & detail modal & SPK print
+        if ($admin) {
+            $this->actingAs($admin);
+            $adminTicketRes = $this->get('/tiket');
+            $adminTicketRes->assertStatus(200);
+            $adminTicketRes->assertSee('📷 Ada Foto');
+
+            $adminPrintRes = $this->get("/tiket/{$workOrder->ticket_id}/print");
+            $adminPrintRes->assertStatus(200);
+            $adminPrintRes->assertSee($workOrder->evidence_photo);
+            $adminPrintRes->assertSee('Dokumentasi Visual Bukti Pengerjaan');
+        }
+
+        // 4. Client can view photo in client portal & riwayat & print receipt
+        if ($client) {
+            $this->actingAs($client);
+            $clientPortalRes = $this->get('/klien/portal');
+            $clientPortalRes->assertStatus(200);
+            $clientPortalRes->assertSee($workOrder->evidence_photo);
+
+            $clientHistoryRes = $this->get('/klien/riwayat');
+            $clientHistoryRes->assertStatus(200);
+            $clientHistoryRes->assertSee($workOrder->evidence_photo);
+
+            $clientReceiptRes = $this->get("/klien/tiket/{$workOrder->ticket_id}/print");
+            $clientReceiptRes->assertStatus(200);
+            $clientReceiptRes->assertSee($workOrder->evidence_photo);
+            $clientReceiptRes->assertSee('Bukti Foto Lapangan');
         }
     }
 }

@@ -126,6 +126,8 @@ class ClientPortalController extends Controller
 
     public function printReceipt(Ticket $ticket): View
     {
+        $ticket->load(['workOrder.technicians', 'ticketLogs', 'workOrder.materialsOutbound']);
+
         return view('klien.print', compact('ticket'));
     }
 }

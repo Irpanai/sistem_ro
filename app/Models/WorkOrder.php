@@ -19,6 +19,7 @@ class WorkOrder extends Model
         'technician_phone',
         'status',
         'tech_notes',
+        'evidence_photo',
         'dispatched_at',
         'resolved_at',
     ];

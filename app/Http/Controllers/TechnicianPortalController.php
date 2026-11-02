@@ -13,7 +13,7 @@ class TechnicianPortalController extends Controller
         $user = auth()->user();
 
         // Get work orders assigned to this technician or where this technician is in the assigned team
-        $workOrders = WorkOrder::with(['ticket.ticketLogs', 'materialsOutbound', 'technicians'])
+        $workOrders = WorkOrder::with(['ticket.ticketLogs', 'ticket.workOrder.technicians', 'materialsOutbound', 'technicians'])
             ->where(function ($q) use ($user) {
                 if ($user) {
                     $q->where('technician_id', $user->id)
@@ -39,7 +39,7 @@ class TechnicianPortalController extends Controller
         $user = auth()->user();
 
         // Get all completed work orders for this technician or where technician was in the team
-        $workOrders = WorkOrder::with(['ticket.ticketLogs', 'materialsOutbound', 'technicians'])
+        $workOrders = WorkOrder::with(['ticket.ticketLogs', 'ticket.workOrder.technicians', 'materialsOutbound', 'technicians'])
             ->where('status', 'Solved')
             ->where(function ($q) use ($user) {
                 if ($user) {

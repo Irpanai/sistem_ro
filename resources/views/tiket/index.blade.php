@@ -144,6 +144,17 @@
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold border {{ $statusBg }}">
                                     {{ $ticket->status }}
                                 </span>
+                                @if($ticket->workOrder && $ticket->workOrder->evidence_photo)
+                                    <button type="button" onclick="openDetailModal({{ json_encode($ticket) }})"
+                                            class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2 py-0.5 rounded border border-emerald-200 mt-1 transition-colors"
+                                            title="Lihat foto bukti pengerjaan">
+                                        <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        <span>📷 Ada Foto</span>
+                                    </button>
+                                @endif
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="inline-flex items-center gap-1.5">
@@ -461,6 +472,83 @@
     </div>
 </div>
 
+<!-- Modal 3: Solusi & Bukti Pengerjaan Lapangan -->
+<div id="modalDetail" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4 shrink-0">
+            <div>
+                <span class="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200" id="detSpk"></span>
+                <h3 class="font-bold text-slate-900 text-base mt-1.5 flex items-center gap-2">
+                    Hasil &amp; Bukti Pengerjaan Lapangan
+                </h3>
+            </div>
+            <button onclick="document.getElementById('modalDetail').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+        </div>
+
+        <div class="overflow-y-auto flex-1 py-4 space-y-4 pr-1 text-xs">
+            <!-- Info Box -->
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-500 uppercase tracking-wider text-[10px] font-semibold">Tim Teknisi Pelaksana:</span>
+                    <strong class="text-slate-900 font-bold" id="detTech"></strong>
+                </div>
+                <div class="flex items-center justify-between pt-2 border-t border-slate-200/60">
+                    <span class="text-slate-500 uppercase tracking-wider text-[10px] font-semibold">Status Pengerjaan:</span>
+                    <span class="inline-flex items-center gap-1 font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        Tuntas Selesai (Solved)
+                    </span>
+                </div>
+            </div>
+
+            <!-- Catatan Teknis -->
+            <div>
+                <label class="block text-slate-500 uppercase tracking-wider text-[10px] font-bold mb-1">
+                    Catatan Teknis / Hasil Perbaikan Lapangan:
+                </label>
+                <div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200 font-mono text-emerald-950 leading-relaxed text-xs" id="detNotes">
+                </div>
+            </div>
+
+            <!-- Foto Bukti Lapangan -->
+            <div id="detPhotoContainer" class="hidden">
+                <div class="flex items-center justify-between mb-1.5">
+                    <label class="block text-slate-700 uppercase tracking-wider text-[10px] font-bold flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        Foto Bukti Pengerjaan / Penyebab Gangguan:
+                    </label>
+                    <a id="detPhotoLink" href="#" target="_blank" class="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 inline-flex items-center gap-1 hover:underline">
+                        <span>Buka Penuh</span>
+                        <span>↗</span>
+                    </a>
+                </div>
+                <div class="relative group cursor-pointer overflow-hidden rounded-2xl border border-emerald-300 bg-slate-900" onclick="window.open(document.getElementById('detPhotoLink').href, '_blank')">
+                    <img id="detPhotoImg" src="" alt="Bukti Pengerjaan Lapangan" class="max-h-64 w-full object-cover rounded-2xl group-hover:scale-105 transition-transform duration-200">
+                    <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/>
+                        </svg>
+                        Perbesar Foto Bukti
+                    </div>
+                </div>
+                <p class="text-[10px] text-slate-400 mt-1 italic">
+                    * Foto ini diunggah langsung oleh teknisi lapangan saat menyelesaikan SPK.
+                </p>
+            </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-100 flex justify-end gap-2 shrink-0">
+            <button type="button" onclick="document.getElementById('modalDetail').classList.add('hidden')"
+                    class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-colors">
+                Tutup
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Modal 4: Riwayat Lengkap & Log Perjalanan Tiket (Timeline) -->
 <div id="modalTimeline" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col">
@@ -630,6 +718,19 @@ function openDetailModal(ticket) {
     document.getElementById('detNotes').innerText = (ticket.work_order && ticket.work_order.tech_notes) 
         ? ticket.work_order.tech_notes 
         : 'Perbaikan selesai dilaksanakan dan sinyal redaman pelanggan kembali normal.';
+
+    const photoContainer = document.getElementById('detPhotoContainer');
+    const photoImg = document.getElementById('detPhotoImg');
+    const photoLink = document.getElementById('detPhotoLink');
+
+    if (ticket.work_order && ticket.work_order.evidence_photo) {
+        photoImg.src = '/storage/' + ticket.work_order.evidence_photo;
+        photoLink.href = '/storage/' + ticket.work_order.evidence_photo;
+        photoContainer.classList.remove('hidden');
+    } else {
+        photoContainer.classList.add('hidden');
+    }
+
     document.getElementById('modalDetail').classList.remove('hidden');
 }
 
@@ -698,6 +799,44 @@ function openTimelineModal(ticket) {
     const container = document.getElementById('tlLogsContainer');
     container.innerHTML = '';
 
+    // If work_order has evidence_photo, display prominent photo card at the top of timeline
+    if (ticket.work_order && ticket.work_order.evidence_photo) {
+        container.innerHTML += `
+            <div class="relative">
+                <div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-emerald-500 ring-4 ring-white"></div>
+                <div class="bg-emerald-50/80 p-3.5 rounded-2xl border border-emerald-200 shadow-xs space-y-2">
+                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                        <span class="font-bold text-xs text-emerald-950 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Foto Bukti Hasil Pengerjaan Lapangan (Dari Teknisi)
+                        </span>
+                        <a href="/storage/${ticket.work_order.evidence_photo}" target="_blank" class="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 inline-flex items-center gap-1 hover:underline">
+                            <span>Buka Ukuran Penuh</span>
+                            <span>↗</span>
+                        </a>
+                    </div>
+                    <div class="relative group cursor-pointer overflow-hidden rounded-xl border border-emerald-300 bg-slate-900" onclick="window.open('/storage/${ticket.work_order.evidence_photo}', '_blank')">
+                        <img src="/storage/${ticket.work_order.evidence_photo}" alt="Foto Bukti Lapangan" class="max-h-60 w-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-200">
+                        <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/>
+                            </svg>
+                            Perbesar Foto
+                        </div>
+                    </div>
+                    ${ticket.work_order.tech_notes ? `
+                        <p class="text-[11px] text-emerald-950 font-mono bg-white/70 p-2 rounded-lg border border-emerald-200">
+                            <strong>Catatan Teknisi:</strong> ${ticket.work_order.tech_notes}
+                        </p>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+
     const logs = ticket.ticket_logs || [];
     if (logs.length > 0) {
         logs.forEach(log => {
@@ -726,12 +865,20 @@ function openTimelineModal(ticket) {
                                 <strong>Catatan Teknis:</strong> ${log.notes}
                             </div>
                         ` : ''}
+                        ${log.attachment ? `
+                            <div class="mt-2.5 pt-2 border-t border-slate-100">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">📷 Foto Bukti Lapangan:</span>
+                                <div class="cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-slate-900 inline-block" onclick="window.open('/storage/${log.attachment}', '_blank')">
+                                    <img src="/storage/${log.attachment}" alt="Lampiran" class="max-h-48 object-cover rounded-xl hover:opacity-95">
+                                </div>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
             `;
         });
     } else {
-        container.innerHTML = `
+        container.innerHTML += `
             <div class="relative">
                 <div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-blue-600 ring-4 ring-white"></div>
                 <div class="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-xs">

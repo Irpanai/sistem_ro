@@ -16,17 +16,29 @@ class WorkOrderController extends Controller
     {
         $request->validate([
             'tech_notes' => 'required|string',
+            'evidence_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
-        DB::transaction(function () use ($workOrder, $request) {
+        $photoPath = null;
+        if ($request->hasFile('evidence_photo')) {
+            $file = $request->file('evidence_photo');
+            $filename = 'evidence_'.$workOrder->id.'_'.time().'.'.$file->getClientOriginalExtension();
+            $photoPath = $file->storeAs('evidence', $filename, 'public');
+        }
+
+        DB::transaction(function () use ($workOrder, $request, $photoPath) {
             $now = now();
 
             // 1. Update Work Order
-            $workOrder->update([
+            $updateData = [
                 'status' => 'Solved',
                 'tech_notes' => $request->tech_notes,
                 'resolved_at' => $now,
-            ]);
+            ];
+            if ($photoPath) {
+                $updateData['evidence_photo'] = $photoPath;
+            }
+            $workOrder->update($updateData);
 
             // 2. Update Ticket
             $workOrder->ticket->update([
@@ -69,6 +81,7 @@ class WorkOrderController extends Controller
                 'title' => 'Perbaikan Lapangan Selesai (Solved)',
                 'description' => "Tim Teknisi ({$workOrder->technician_name}) telah menyelesaikan perbaikan lapangan pada titik {$workOrder->ticket->odp_code}. Seluruh koneksi pelanggan kembali normal.",
                 'notes' => $request->tech_notes,
+                'attachment' => $photoPath,
             ]);
         });
 

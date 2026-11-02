@@ -229,16 +229,50 @@
 
                     <!-- Tech Notes & Resolution -->
                     @if($isSolved)
-                        <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200 text-xs">
+                        <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200 text-xs space-y-3">
                             <div class="flex items-center justify-between">
                                 <span class="font-bold text-emerald-950 uppercase tracking-wider text-[10px]">Catatan Teknis Selesai:</span>
                                 <span class="text-emerald-700 font-semibold text-[11px]">
                                     Selesai: {{ $wo->resolved_at ? $wo->resolved_at->format('d M Y, H:i') : '-' }} WITA
                                 </span>
                             </div>
-                            <p class="font-mono text-emerald-900 mt-1.5 leading-relaxed text-xs">
+                            <p class="font-mono text-emerald-900 leading-relaxed text-xs">
                                 {{ $wo->tech_notes ?: 'Redaman normal -19 dBm, penarikan ulang kabel selesai.' }}
                             </p>
+
+                            @if($wo->evidence_photo)
+                                <div class="pt-3 border-t border-emerald-200/80">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-bold text-emerald-950 text-[10px] uppercase tracking-wider flex items-center gap-1.5">
+                                            <svg class="w-3.5 h-3.5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                            Foto Bukti Pengerjaan / Penyebab Gangguan:
+                                        </span>
+                                        <a href="{{ asset('storage/' . $wo->evidence_photo) }}" target="_blank"
+                                           class="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 inline-flex items-center gap-1 hover:underline">
+                                            <span>Lihat Penuh</span>
+                                            <span>↗</span>
+                                        </a>
+                                    </div>
+                                    <div class="relative group cursor-pointer inline-block overflow-hidden rounded-xl border border-emerald-300/80 bg-slate-900 shadow-xs"
+                                         onclick="window.open('{{ asset('storage/' . $wo->evidence_photo) }}', '_blank')">
+                                        <img src="{{ asset('storage/' . $wo->evidence_photo) }}"
+                                             alt="Bukti Pekerjaan {{ $wo->spk_number }}"
+                                             class="max-h-48 w-full sm:w-72 object-cover rounded-xl group-hover:scale-105 transition-transform duration-200">
+                                        <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1.5">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/>
+                                            </svg>
+                                            Perbesar Foto
+                                        </div>
+                                    </div>
+                                    <p class="text-[10px] text-slate-500 mt-1 italic">
+                                        * Foto ini otomatis terhubung dan dapat dilihat oleh Klien serta Admin NOC.
+                                    </p>
+                                </div>
+                            @endif
                         </div>
                     @else
                         <!-- Action to Resolve -->
@@ -284,7 +318,7 @@
             <button onclick="document.getElementById('modalResolve').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
         </div>
 
-        <form id="formResolve" method="POST" action="" class="space-y-4 mt-5">
+        <form id="formResolve" method="POST" action="" enctype="multipart/form-data" class="space-y-4 mt-5">
             @csrf
             <div>
                 <p class="text-xs text-slate-500">Nama Pelanggan: <strong class="text-slate-900" id="resCustomerName"></strong></p>
@@ -298,6 +332,58 @@
                           placeholder="Contoh: Kabel dropcore putus di tiang 4 dekat pohon mangga. Sudah disambung ulang menggunakan 1 buah fast connector. Hasil ukur OPM redaman -18.5 dBm normal, lampu PON modem hijau stabil dan koneksi sudah dites bersama pelanggan."
                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20"></textarea>
                 <p class="text-[11px] text-slate-400 mt-1">Catatan ini akan langsung tersimpan di riwayat tiket pelanggan dan audit log NOC.</p>
+            </div>
+
+            <!-- Upload Foto Bukti Pengerjaan / Penyebab Gangguan -->
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1 flex items-center justify-between">
+                    <span class="flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        Upload Foto Bukti Pengerjaan / Penyebab Gangguan
+                    </span>
+                    <span class="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-semibold border border-emerald-200">
+                        Klien &amp; Admin Dapat Melihat
+                    </span>
+                </label>
+
+                <div class="mt-1">
+                    <label for="evidence_photo_input" class="flex flex-col items-center justify-center w-full p-4 border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-2xl cursor-pointer bg-slate-50 hover:bg-emerald-50/30 transition-all group">
+                        <div class="flex flex-col items-center justify-center text-center space-y-1">
+                            <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 group-hover:text-emerald-600 group-hover:border-emerald-300 transition-colors shadow-xs">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <p class="text-xs font-semibold text-slate-700 group-hover:text-emerald-800">
+                                Klik untuk memilih foto dari galeri / kamera HP
+                            </p>
+                            <p class="text-[10px] text-slate-400">
+                                Format JPG, PNG, WEBP (Maksimal 5MB). Foto kabel putus, redaman OPM, atau tiang.
+                            </p>
+                        </div>
+                        <input id="evidence_photo_input" name="evidence_photo" type="file" accept="image/jpeg,image/png,image/jpg,image/webp" class="hidden" onchange="previewEvidencePhoto(this)">
+                    </label>
+
+                    <!-- Image Preview Container -->
+                    <div id="evidencePreviewBox" class="hidden mt-2.5 p-2.5 rounded-xl border border-emerald-200 bg-emerald-50/50 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <img id="evidencePreviewImg" src="" alt="Pratinjau Foto" class="w-14 h-14 object-cover rounded-lg border border-slate-300 shadow-xs">
+                            <div class="min-w-0">
+                                <p id="evidenceFileName" class="text-xs font-bold text-slate-900 truncate max-w-xs"></p>
+                                <span class="text-[10px] text-emerald-700 font-semibold flex items-center gap-1 mt-0.5">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    Foto siap diunggah &amp; diteruskan
+                                </span>
+                            </div>
+                        </div>
+                        <button type="button" onclick="clearEvidencePhoto()" class="text-slate-400 hover:text-rose-600 p-1 text-xs font-bold transition-colors" title="Hapus foto">
+                            ✕ Batal
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div class="pt-4 border-t border-slate-100 flex justify-end gap-2">
@@ -447,10 +533,40 @@ function filterSpk(status) {
     }
 }
 
+function previewEvidencePhoto(input) {
+    const box = document.getElementById('evidencePreviewBox');
+    const img = document.getElementById('evidencePreviewImg');
+    const nameEl = document.getElementById('evidenceFileName');
+
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        nameEl.innerText = file.name;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            img.src = e.target.result;
+            box.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    } else {
+        clearEvidencePhoto();
+    }
+}
+
+function clearEvidencePhoto() {
+    const input = document.getElementById('evidence_photo_input');
+    if (input) input.value = '';
+    const box = document.getElementById('evidencePreviewBox');
+    if (box) box.classList.add('hidden');
+    const img = document.getElementById('evidencePreviewImg');
+    if (img) img.src = '';
+}
+
 function openResolveModal(id, spkNumber, customerName) {
     document.getElementById('formResolve').action = '/spk/' + id + '/resolve';
     document.getElementById('resSpkNumber').innerText = spkNumber;
     document.getElementById('resCustomerName').innerText = customerName;
+    clearEvidencePhoto();
     document.getElementById('modalResolve').classList.remove('hidden');
 }
 
@@ -520,6 +636,44 @@ function openTechTimelineModal(ticket) {
     const container = document.getElementById('techTlLogsContainer');
     container.innerHTML = '';
 
+    // If work_order has evidence_photo, display prominent photo card at the top of timeline
+    if (ticket.work_order && ticket.work_order.evidence_photo) {
+        container.innerHTML += `
+            <div class="relative">
+                <div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-emerald-500 ring-4 ring-white"></div>
+                <div class="bg-emerald-50/80 p-3.5 rounded-2xl border border-emerald-200 shadow-xs space-y-2">
+                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                        <span class="font-bold text-xs text-emerald-950 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Foto Bukti Pengerjaan / Penyebab Gangguan Lapangan
+                        </span>
+                        <a href="/storage/${ticket.work_order.evidence_photo}" target="_blank" class="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 inline-flex items-center gap-1 hover:underline">
+                            <span>Buka Ukuran Penuh</span>
+                            <span>↗</span>
+                        </a>
+                    </div>
+                    <div class="relative group cursor-pointer overflow-hidden rounded-xl border border-emerald-300 bg-slate-900" onclick="window.open('/storage/${ticket.work_order.evidence_photo}', '_blank')">
+                        <img src="/storage/${ticket.work_order.evidence_photo}" alt="Foto Bukti Lapangan" class="max-h-60 w-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-200">
+                        <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/>
+                            </svg>
+                            Perbesar Foto
+                        </div>
+                    </div>
+                    ${ticket.work_order.tech_notes ? `
+                        <p class="text-[11px] text-emerald-950 font-mono bg-white/70 p-2 rounded-lg border border-emerald-200">
+                            <strong>Catatan Teknisi:</strong> ${ticket.work_order.tech_notes}
+                        </p>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+
     const logs = ticket.ticket_logs || [];
     if (logs.length > 0) {
         logs.forEach(log => {
@@ -548,12 +702,20 @@ function openTechTimelineModal(ticket) {
                                 <strong>Catatan:</strong> ${log.notes}
                             </div>
                         ` : ''}
+                        ${log.attachment ? `
+                            <div class="mt-2.5 pt-2 border-t border-slate-100">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">📷 Foto Terlampir:</span>
+                                <div class="cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-slate-900 inline-block" onclick="window.open('/storage/${log.attachment}', '_blank')">
+                                    <img src="/storage/${log.attachment}" alt="Lampiran" class="max-h-48 object-cover rounded-xl hover:opacity-95">
+                                </div>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
             `;
         });
     } else {
-        container.innerHTML = `
+        container.innerHTML += `
             <div class="relative">
                 <div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-blue-600 ring-4 ring-white"></div>
                 <div class="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-xs">

@@ -244,7 +244,7 @@
                 </div>
 
                 <!-- Catatan Teknis Selesai & Hasil OPM -->
-                <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200 text-xs">
+                <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200 text-xs space-y-3">
                     <div class="flex items-center justify-between">
                         <span class="font-bold text-emerald-950 uppercase tracking-wider text-[10px] flex items-center gap-1">
                             <svg class="w-3.5 h-3.5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -256,9 +256,40 @@
                             Tuntas Diverifikasi
                         </span>
                     </div>
-                    <p class="font-mono text-emerald-900 mt-1.5 leading-relaxed text-xs bg-white/70 p-3 rounded-lg border border-emerald-200">
+                    <p class="font-mono text-emerald-900 leading-relaxed text-xs bg-white/70 p-3 rounded-lg border border-emerald-200">
                         {{ $wo->tech_notes ?: 'Redaman normal -19 dBm, penarikan ulang kabel selesai dan koneksi dites stabil.' }}
                     </p>
+
+                    @if($wo->evidence_photo)
+                        <div class="pt-3 border-t border-emerald-200/80">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-bold text-emerald-950 text-[10px] uppercase tracking-wider flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                    Foto Bukti Pengerjaan / Penyebab Gangguan:
+                                </span>
+                                <a href="{{ asset('storage/' . $wo->evidence_photo) }}" target="_blank"
+                                   class="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 inline-flex items-center gap-1 hover:underline">
+                                    <span>Lihat Penuh</span>
+                                    <span>↗</span>
+                                </a>
+                            </div>
+                            <div class="relative group cursor-pointer inline-block overflow-hidden rounded-xl border border-emerald-300/80 bg-slate-900 shadow-xs"
+                                 onclick="window.open('{{ asset('storage/' . $wo->evidence_photo) }}', '_blank')">
+                                <img src="{{ asset('storage/' . $wo->evidence_photo) }}"
+                                     alt="Bukti Pekerjaan {{ $wo->spk_number }}"
+                                     class="max-h-48 w-full sm:w-72 object-cover rounded-xl group-hover:scale-105 transition-transform duration-200">
+                                <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1.5">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/>
+                                    </svg>
+                                    Perbesar Foto
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         @empty
@@ -489,6 +520,44 @@ function openTechTimelineModal(ticket) {
     const container = document.getElementById('techTlLogsContainer');
     container.innerHTML = '';
 
+    // If work_order has evidence_photo, display prominent photo card at the top of timeline
+    if (ticket.work_order && ticket.work_order.evidence_photo) {
+        container.innerHTML += `
+            <div class="relative">
+                <div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-emerald-500 ring-4 ring-white"></div>
+                <div class="bg-emerald-50/80 p-3.5 rounded-2xl border border-emerald-200 shadow-xs space-y-2">
+                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                        <span class="font-bold text-xs text-emerald-950 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Foto Bukti Pengerjaan / Penyebab Gangguan Lapangan
+                        </span>
+                        <a href="/storage/${ticket.work_order.evidence_photo}" target="_blank" class="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 inline-flex items-center gap-1 hover:underline">
+                            <span>Buka Ukuran Penuh</span>
+                            <span>↗</span>
+                        </a>
+                    </div>
+                    <div class="relative group cursor-pointer overflow-hidden rounded-xl border border-emerald-300 bg-slate-900" onclick="window.open('/storage/${ticket.work_order.evidence_photo}', '_blank')">
+                        <img src="/storage/${ticket.work_order.evidence_photo}" alt="Foto Bukti Lapangan" class="max-h-60 w-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-200">
+                        <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/>
+                            </svg>
+                            Perbesar Foto
+                        </div>
+                    </div>
+                    ${ticket.work_order.tech_notes ? `
+                        <p class="text-[11px] text-emerald-950 font-mono bg-white/70 p-2 rounded-lg border border-emerald-200">
+                            <strong>Catatan Teknisi:</strong> ${ticket.work_order.tech_notes}
+                        </p>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+
     const logs = ticket.ticket_logs || [];
     if (logs.length > 0) {
         logs.forEach(log => {
@@ -517,12 +586,20 @@ function openTechTimelineModal(ticket) {
                                 <strong>Catatan:</strong> ${log.notes}
                             </div>
                         ` : ''}
+                        ${log.attachment ? `
+                            <div class="mt-2.5 pt-2 border-t border-slate-100">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">📷 Foto Terlampir:</span>
+                                <div class="cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-slate-900 inline-block" onclick="window.open('/storage/${log.attachment}', '_blank')">
+                                    <img src="/storage/${log.attachment}" alt="Lampiran" class="max-h-48 object-cover rounded-xl hover:opacity-95">
+                                </div>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
             `;
         });
     } else {
-        container.innerHTML = `
+        container.innerHTML += `
             <div class="relative">
                 <div class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-blue-600 ring-4 ring-white"></div>
                 <div class="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-xs">
